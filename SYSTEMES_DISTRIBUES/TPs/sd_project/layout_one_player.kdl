@@ -1,9 +1,0 @@
-layout {
-        pane command="python3" {
-	     args "display.py" "-m" "-p" "9000"
-	}
-    pane size=3 command="bash" {
-    	 args "-c" "python3 ./player_kb.py 0 9000"
-	 focus true
-    }
-}
