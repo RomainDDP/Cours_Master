@@ -70,11 +70,13 @@ P_WRITE:	process(CLK)
 begin
 	if rising_edge(CLK) then
 		-- test du RST
-		if RST='0' then
-			________
-			________
-			________
-			________
+		if RST='0' then -- condition initiale : toujours mettre ça en premier
+		      W_ADR <= ( others => '0');
+		elsif WEN = '0' then -- parsque WEN enabled quand WEN = 0 ( car WEN*)
+		-- incrémentation de W pour la prochaine écriture ( ligne peut être mise n'importe ou )
+		  W_ADR <= W_ADR +'1'; -- met le signal a jour SEULEMENT A LA FIN DU PROCESS
+		  -- on met dans le registre numero W la valeur dans DI :
+		  REGS(conv_integer(W_ADR)) <= DI; -- même si W affecté a une valeur avant, comme ca ne sera que mit en place a la fin du process, W va ici avoir l'ancienne valeur de W
 		end if;
 	end if;
 end process P_WRITE;
@@ -88,18 +90,18 @@ begin
 	if rising_edge(CLK) then
 		-- test du RST
 		if RST='0' then
-			________
-			________
-			________
-			________
-			________
-			________
-			________
-			________
-			________
-			________
-			________
-			________
+            R_ADR <= (others => '0');
+            DO <= (others => 'Z');
+        else
+            -- R_ADR management
+            if (WEN = '0' and FULL = '1') or (REN ='0' and EMPTY = '0') then
+                R_ADR <= R_ADR + '1';
+            end if;
+            -- DO management
+            DO <= (others => 'Z'); -- ne pas oublier de definir une valeur de base pour DO sinon creer latch
+            if REN = '0' and EMPTY = '0' then
+                DO <= REGS(conv_integer(R_ADR));
+            end if;
 		end if;
 	end if;
 end process P_READ;
@@ -111,16 +113,14 @@ P_EMPTY:	process(CLK)
 	variable next_R : std_logic_vector (ABUS_WIDTH-1 downto 0);
 begin
 	if rising_edge(CLK) then
+	   next_R := R_ADR + '1';
 		-- test du RST
 		if RST='0' then
-			________
-			________
-			________
-			________
-			________
-			________
-			________
-			________
+            EMPTY <= '1';
+        elsif WEN = '0' then  -- si ya écriture, empty va forcément ne pas étre vide 
+            EMPTY <= '0';
+        elsif REN = '0' and WEN = '1' and next_R = W_ADR then 
+            EMPTY <= '1';
 		end if;
 	end if;
 end process P_EMPTY;
@@ -132,16 +132,14 @@ P_FULL:	process(CLK)
 	variable next_W : std_logic_vector (ABUS_WIDTH-1 downto 0);
 begin
 	if rising_edge(CLK) then
+        next_W := W_ADR + '1';
 		-- test du RST
 		if RST='0' then
-			________
-			________
-			________
-			________
-			________
-			________
-			________
-			________
+			FULL <= '0';
+        elsif REN = '1' and WEN = '0' and next_W = R_ADR then
+            FULL <= '1';
+        elsif REN = '0' and WEN = '1' then
+            FULL <= '0';
 		end if;
 	end if;
 end process P_FULL;
@@ -150,26 +148,32 @@ end process P_FULL;
 -- Process P_MID indique l'etat au moins a moitie plein de la FIFO
 --		'1' FIFO au moins a moitie pleine '0' sinon, cette information
 --		 etant mise a jour sur front montant d'horloge
-P_MID:	process(CLK)
-	variable temp_W : std_logic_vector (ABUS_WIDTH-1 downto 0);
+P_MID:    process(CLK)
+    variable temp_W : std_logic_vector (ABUS_WIDTH-1 downto 0);
 begin
-	if rising_edge(CLK) then
-		-- test du RST
-		if RST='0' then
-			________
-			________
-			________
-			________
-			________
-			________
-			________
-			________
-			________
-			________
-			________
-			________
-		end if;
-	end if;
+    if rising_edge(CLK) then
+        -- test du RST
+        if RST='0' then
+            MID <= '0';
+        else 
+            if WEN = '0' then
+                temp_W := W_ADR+1;
+            else 
+                temp_W := W_ADR;
+            end if;
+            
+            if REN /= WEN and
+                R_ADR(R_ADR'left) /= temp_W(temp_W'left) and
+                R_ADR(R_ADR'left-1 downto 0) = temp_W(temp_W'left-1 downto 0) then
+                
+                if WEN = '0' then
+                    MID <= '1';
+                else 
+                    MID <= '0';
+                end if;
+            end if;
+        end if;
+    end if;
 end process P_MID;
 
 end behavior;

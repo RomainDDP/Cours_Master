@@ -22,7 +22,7 @@ end test_pulse_gen;
 architecture behaviour of test_pulse_gen is
 
     -- constant defintions
-	constant TIMEOUT 	: time := 2500 ms; -- simulation timeout
+	constant TIMEOUT 	: time := 10000 ms; -- simulation timeout
     constant clkpulse   : Time := 500 ns; -- 1/2 periode horloge
 
     -- types/subtypes definitions
@@ -54,7 +54,7 @@ end process P_TIMEOUT;
 --------------------------------------------------
 -- instantiation et mapping du composant registres
 pgen0 : entity work.pulse_gen(behaviour)
---			generic map (10)
+			generic map (10)
 			port map (MCLK => E_CLK,
                         RST => E_RST,
                         P => E_P);
@@ -66,7 +66,7 @@ begin
 
 	-- initialisations
 	E_RST <= '0';
-    E_CLK <= '0'; -- DON'T DO THAT ... guess why ???
+    -- E_CLK <= '0'; -- DON'T DO THAT ... guess why ???
 
 	-- sequence RESET
 	E_RST <= '0';
