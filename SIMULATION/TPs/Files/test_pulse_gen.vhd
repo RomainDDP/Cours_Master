@@ -54,7 +54,7 @@ end process P_TIMEOUT;
 --------------------------------------------------
 -- instantiation et mapping du composant registres
 pgen0 : entity work.pulse_gen(behaviour)
-			generic map (10)
+--			generic map (10)
 			port map (MCLK => E_CLK,
                         RST => E_RST,
                         P => E_P);

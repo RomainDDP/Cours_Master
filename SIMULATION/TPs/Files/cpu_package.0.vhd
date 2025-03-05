@@ -86,30 +86,30 @@ end log2;
 -- Synthesisable log2 function
 -- Note: we suppose input and output vectors featuring the same shape
 function log2( vI: in std_logic_vector ) return std_logic_vector is
+    variable v_value : natural; -- valeur du vector d'entrée
+    variable v_bits : natural; -- nombre de bits nécessaire à l'écriture de la valeur du vecteur
 begin
-  -- synthesis translate_off
-  if is_X( vI ) then
+    -- synthesis translate_off
+    if is_X( vI ) then
+        return conv_std_logic_vector(0,vI'length);
+    end if;
+    
+    -- synthesis translate_on
+    if vI=conv_std_logic_vector(0,vI'length) or vI=conv_std_logic_vector(1,vI'length) then
+        return conv_std_logic_vector(0,vI'length);
+    end if;
+    
+    
+    -- askip un truc ici ?
+    -- conv integer du std_logic_vector et l'envoi dans log2 natural
+    -- puis return du conv_std_logic_vector(res, vI'length) ?
+    v_value := conv_integer(vI);
+    v_bits := log2(v_value);e
+    return conv_std_logic_vector(v_bits,vI'length);
+    
+    
+    -- default
     return conv_std_logic_vector(0,vI'length);
-  end if;
-  -- synthesis translate_on
-
-  if vI=conv_std_logic_vector(0,vI'length) or vI=conv_std_logic_vector(1,vI'length) then
-    return conv_std_logic_vector(0,vI'length);
-  end if;
-  ________
-  ________
-  ________
-  ________
-  ________
-  ________
-  ________
-  ________
-  ________
-  ________
-  ________
-  ________
-  -- default
-  return conv_std_logic_vector(0,vI'length);
 end log2; 
 
 end cpu_package;
