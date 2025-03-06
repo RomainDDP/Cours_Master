@@ -48,7 +48,8 @@ entity memory is
 		CLK,EN,WEN      : in std_logic; 
 
 		-- adress bus
-		ADR			    : in std_logic_vector(______________ downto 0);
+		ADR			    : in std_logic_vector(log2(MEM_SIZE)-1 downto 0);
+		
 
 		-- Ports entree/sortie du cache
 		DI				: in std_logic_vector(DBUS_WIDTH-1 downto 0);
@@ -65,7 +66,7 @@ architecture behavior of memory is
 	-- definition de constantes
 
 	-- definitions de types (index type default is integer)
-	type FILE_REGS is array (0 to ____) of std_logic_vector (__________________ downto 0);
+	type FILE_REGS is array (0 to MEM_SIZE-1) of std_logic_vector (DBUS_WIDTH-1 downto 0);
 
 	-- definition de la fonction de chargement d'un fichier
 	--		on peut egalement mettre cette boucle dans le process qui fait les ecritures
@@ -111,23 +112,24 @@ begin
 
 -------------------
 -- Process P_ACCESS
-P_ACCESS: process(____,____,____)
+P_ACCESS: process(CLK, EN, WEN)
 begin
-    ________
-    ________
-    ________
-    ________
-    ________
-    ________
-    ________
-    ________
-    ________
-    ________
-    ________
-    ________
-    ________
-    ________
-    ________
+    if rising_edge(CLK) then
+        if RST = '0' then
+            REGS <= LOAD_FILE(STRING'(FILENAME));
+            DO <= conv_std_logic_vector('Z', DBUS_WIDTH);
+        end if;
+        
+        if EN = '1' and WEN = '1' then
+            DO <= REGS( conv_integer(ADR) );
+        elsif EN = '1' and WEN = '0' then
+            REGS( conv_integer(ADR) ) <= DI;
+            
+        elsif EN = '0' then
+            DO <= conv_std_logic_vector('Z', DBUS_WIDTH);
+        end if;
+        
+    end if;
 end process P_ACCESS;
 
 end behavior;

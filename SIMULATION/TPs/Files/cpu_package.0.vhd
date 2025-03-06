@@ -86,8 +86,8 @@ end log2;
 -- Synthesisable log2 function
 -- Note: we suppose input and output vectors featuring the same shape
 function log2( vI: in std_logic_vector ) return std_logic_vector is
-    variable v_value : natural; -- valeur du vector d'entrée
-    variable v_bits : natural; -- nombre de bits nécessaire à l'écriture de la valeur du vecteur
+    variable MSB : natural; -- Most Significant Bit de notre array input
+    variable count : natural; -- Compteur du nombre de 1 présent dans 
 begin
     -- synthesis translate_off
     if is_X( vI ) then
@@ -100,13 +100,24 @@ begin
     end if;
     
     
-    -- askip un truc ici ?
-    -- conv integer du std_logic_vector et l'envoi dans log2 natural
-    -- puis return du conv_std_logic_vector(res, vI'length) ?
-    v_value := conv_integer(vI);
-    v_bits := log2(v_value);e
-    return conv_std_logic_vector(v_bits,vI'length);
+    -- boucle for pour aller chercher le MSB
+    for i in vI'high to 0 loop
+        MSB := i;
+        exit when vI(i) = '1';
+    end loop; 
     
+    -- Re boucle pour regarder si il y a un autre bit à 1 après le MSB
+    for j in MSB to 0 loop
+        if vI(j) = '1' then
+            MSB := MSB + 1; -- Si c'est le cas, MSB += 1
+            exit;
+        end if;
+    end loop;
+    
+    -- On renvoi notre résultat !
+    if MSB > 0 then
+        return conv_std_logic_vector(MSB, vI'length);
+    end if;
     
     -- default
     return conv_std_logic_vector(0,vI'length);

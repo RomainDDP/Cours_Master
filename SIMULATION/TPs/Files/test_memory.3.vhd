@@ -39,7 +39,7 @@ architecture behavior of test_memory is
 	constant S_L1		: positive := L1_SIZE; -- taille du cache L1 en nombre de mots
 	constant S_ADR		: positive := log2(S_L1); -- taille du bus adr du cache
 --	constant FILENAME : string := ""; -- init a 0 par defaut
-	constant FILENAME   : string := "/home/<user>/tpvhdl/rom_file.0.txt"; -- init par fichier
+	constant FILENAME   : string := "/nfs/home/m1info5/Cours_Master/SIMULATION/TPs/Files/rom_file.0.txt"; -- init par fichier
 	constant TIMEOUT 	: time := 100 ns; -- timeout de la simulation
 
 -- definition de constantes

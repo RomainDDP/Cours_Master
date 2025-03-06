@@ -72,11 +72,9 @@ E_OUT <= log2( E_IN );
 ---------------------------------------
 -- component instantiation
 -- For post-synthesis timing simulation
---clog2: entity work.log2_hw(_________)
---        ________
---        ________
---        ________
---        ________
+clog2: entity work.log2_hw(8)
+
+
 
 -----------------------------
 -- Test process
@@ -86,7 +84,7 @@ begin
 	-- initialisations
 	E_RST <= '0';
 	E_IN <= (others=>'0');
-	--E_IN <= 0;
+	-- E_IN <= 0;
     -- E_CLK <= '0'; DON'T DO THAT ... guess why ???
 
 	-- sequence RESET
