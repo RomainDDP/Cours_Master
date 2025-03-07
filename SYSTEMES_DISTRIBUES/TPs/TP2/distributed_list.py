@@ -3,15 +3,13 @@
 
 import sys
 import socket
-import sys
 import threading
 
 # Variables globales à nos threads
 TOKEN = 0
 MUTEX_TOKEN = threading.Lock() 
-MUTEX_PLAYER = threading.Lock()
 COND_TOKEN = threading.Condition(MUTEX_TOKEN)
-COND_PLAYER = threading.Condition(MUTEX_PLAYER)
+FLAG_PLAYER = True
 DATA_QUEUE = []
 
 def send_to(port, data):
@@ -29,14 +27,44 @@ def socket_setup(port):
     return s
 
 def thread_player(port):
+    global FLAG_PLAYER
+    global DATA_QUEUE
+    global TOKEN
     my_socket = socket_setup(port)
     while True:
-        with COND_PLAYER:
+        clientsocket, _ = my_socket.accept()
+        DATA_QUEUE.append(clientsocket.recv(1024))
+
+        if FLAG_PLAYER is False:
+            my_socket.connect(("localhost", my_displ_port))
+            for move in DATA_QUEUE:
+                my_socket.send(move)
+
+            COND_TOKEN.notify() 
+
+        if TOKEN <= 0:
+            break
+
 
 def thread_token(port):
+    global FLAG_PLAYER
+    global DATA_QUEUE
+    global TOKEN
     my_socket = socket_setup(port)
     while True:
-        pass
+        clientsocket, _ = my_socket.accept()
+        TOKEN = int(clientsocket.recv(4).decode())
+        if TOKEN <= 0 : 
+            break
+        nb_moves = len(DATA_QUEUE)
+        FLAG_PLAYER = False
+        COND_TOKEN.wait()
+        FLAG_PLAYER = True
+        my_socket.connect(("localhost", ports_syst[(my_token_port + 1) % len(ports_syst)]))
+        my_socket.sendall(str(TOKEN - nb_moves).encode())
+        if TOKEN-nb_moves <= 0:
+            break
+        
 
 
 
@@ -67,6 +95,12 @@ print(f"The ports of others distributed systems are : \033[33m {ports_syst} \033
 token_thread = threading.Thread(target=thread_token, args=(my_token_port,))
 player_thread = threading.Thread(target=thread_token, args=(my_player_port,))
 
+token_thread.start()
+player_thread.start()
 
 
+token_thread.join()
+player_thread.join()
+
+print(f"Everything is done.")
 
