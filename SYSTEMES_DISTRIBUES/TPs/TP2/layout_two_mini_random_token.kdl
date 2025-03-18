@@ -8,7 +8,7 @@ layout {
 				args "display.py" "-m" "-n" "2" "-p" "9001"
 			}
 		}
-		pane split_direction="vertical" {
+		pane split_direction="vertical" size=5 {
 			pane command="python3" {
 				args "distributed_list.py" "2" "0" "9000" "9001" "8000" "8001"
 			}
@@ -18,7 +18,7 @@ layout {
 		}
     }
     pane start_suspended=true borderless=true size=3 command="bash" {
-    	 args "-c" "python3 ./player.py 0 8000 & python3 ./player.py 1 8001 & wait"
+    	 args "-c" "python3 ./player.py 0 8000 & sleep 2 && python3 ./player.py 1 8001 & wait"
 	 focus true
     }
 }

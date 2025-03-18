@@ -94,12 +94,13 @@ def thread_system(system_port, total_moves):
     
     if my_id == nb_players - 1: # Envoi du premier jeton
         send_to(next_syst_port, str(0).encode())
+        print(f"The first token was launched in the system ! sent to {next_syst_port}")
 
     while True:
         is_token, data = listen_to(system_socket)
         
         if is_token: # What was received was the token
-            #print(f"\033[36m Token is in system n°{my_id}.\033[0m")
+            print(f"\033[36m Token is in system n°{my_id}.\033[0m")
 
             # Sending the moves if this system to its display.
             for move in PLAYER_MOVES:
@@ -107,7 +108,7 @@ def thread_system(system_port, total_moves):
                 PLAYER_MOVES.remove(move)
                 total_moves -= 1
 
-            #time.sleep(3)
+            time.sleep(0.1)
             if(send_to(next_syst_port, data) is False): # Sending the token to the next system.
                 for move in PLAYER_MOVES:
                     send_to(my_displ_port, move)
