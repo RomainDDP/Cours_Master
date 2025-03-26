@@ -4,14 +4,17 @@
 import sys
 import socket
 import threading
+import json
 
 # Variables globales à nos threads
 MAX_MOVES = 10
 PLAYER_MOVES = []
 END_QUEUE = []
+WAIT_QUEUE = []
 SYSTEM_PORT = 30_000
 CLOCK = []
 CRITIC_SECTION = threading.Condition()
+FLAG_WAITING = False
 
 # Message class.
 class Message:
@@ -20,9 +23,29 @@ class Message:
         self.clock = clock 
         self.is_done = is_done
 
-    def compare_clock(self, other: "Message") -> bool:
+    def clock_less_than(self, other: "Message") -> bool:
         return self.clock < other.clock
 
+    def encode(self) -> bytes:
+        data = json.dumps({
+            "id" : self.id,
+            "clock" : self.clock,
+            "is_done" : self.is_done
+        })
+        return data.encode()
+
+    @staticmethod
+    def decode(msg : bytes | None) -> "Message":
+        if msg is None:
+            print("A problem occured with the message")
+            exit()
+        else:
+            data = msg.decode()
+            data = json.loads(data)
+            return Message(data["id"], data["clock"], data["is_done"])
+
+    def __str__(self) -> str:
+        return f"id : {self.id}, clock : {self.clock}, is_done : {self.is_done}"
 
 # ---- Definitions of the functions. ----
 
@@ -42,10 +65,6 @@ def socket_setup(port:int, ip='127.0.0.1', timeout=False, timer=5.0) -> socket.s
         print(e)
         exit()
 
-# Decode the data to know if its the token or something else.
-# Return True if it is the token, False if not.
-def decode_data(data:bytes) -> Message | None:
-    pass
 
 
 def listen_to(target_socket:socket.socket) -> bytes | None:
@@ -70,6 +89,21 @@ def send_to(port:int, data:bytes) -> bool:
         print(e)
         return False
 
+# Vérifie si le message est un OK.
+def is_OK(data):
+    try:
+        _ = int(data.decode())
+        return True
+    except:
+        return False
+
+
+def ask_for_CS(is_done : bool) -> None:
+    msg = Message(my_id, CLOCK[my_id], is_done)
+    data = msg.encode()
+    for other in ports_syst:
+        send_to(other, data)
+
 
 # ---- Definitions of the threads. ----
 
@@ -77,15 +111,25 @@ def send_to(port:int, data:bytes) -> bool:
 # put into a buffer its messages.
 def thread_player(player_port):
     global PLAYER_MOVES
+    global CLOCK
+    global FLAG_WAITING
 
     player_socket = socket_setup(player_port)
     print(f"Thread listening on port {player_port} has started")
 
-    for _ in range(MAX_MOVES):
+    for i in range(MAX_MOVES):
         clientsocket, _ = player_socket.accept()
+        CLOCK[my_id] += 1 # Hmmmmmm
         data = clientsocket.recv(1024)
-        PLAYER_MOVES.append(data)
-        
+
+        # Entering critical section
+        with CRITIC_SECTION:
+            FLAG_WAITING = True
+            ask_for_CS(i == MAX_MOVES-1)
+            CRITIC_SECTION.wait()
+            for port in ports_disp:
+                send_to(port, data)
+            FLAG_WAITING = False
 
     print(f"Thread listening on {player_port} has finished")
     player_socket.close()
@@ -94,17 +138,29 @@ def thread_player(player_port):
 # Receive messages from others systems then act accordingly.
 def thread_system(system_port):
     global PLAYER_MOVES
+    global FLAG_WAITING
 
-    next_syst_port = SYSTEM_PORT + ((my_id+1) % nb_players)
-    system_socket = socket_setup(system_port, timeout=True, timer=30.0)
-    
+    system_socket = socket_setup(system_port, timeout=False, timer=30.0)
+    OK_count = 1
+
     print(f"Thread listening for the token has started")
     
-
     while True:
         data = listen_to(system_socket)
+        CLOCK[my_id] += 1 
         
-     
+        if(is_OK(data)):
+            OK_count += 1 
+            if(OK_count == nb_players):
+                OK_count = 1
+                with CRITIC_SECTION:
+                    CRITIC_SECTION.notify()
+        else:
+            msg = Message.decode(data)
+            send_to(ports_syst[msg.id], str(0).encode())
+            #if(FLAG_WAITING):
+            #    if(msg.clock_less_than(CLOCK[my_id]) is False):
+
     print(f"Thread listening for the token has finished")
     system_socket.close()        
 
@@ -122,7 +178,7 @@ ports = [int(txt) for txt in sys.argv[3:]]
 ports_disp = ports[:nb_players]
 
 # Port used by this system player
-player_port = ports[my_id]
+player_port = ports[nb_players+my_id]
 
 # Ports of others systems
 ports_syst = [i+SYSTEM_PORT for i in range(nb_players)]
@@ -133,6 +189,11 @@ print(f"There are\033[33m {nb_players} \033[0mplayers and my id is\033[33m {my_i
 print(f"The port used by my player is :\033[33m {player_port} \033[0m")
 print(f"The ports of displays are :\033[33m {ports_disp} \033[0m")
 print(f"The ports of others distributed systems are :\033[33m {ports_syst} \033[0m")
+
+
+# init of the global values : 
+END_QUEUE = [False] * nb_players
+CLOCK = [0] * nb_players
 
 # Initialisation des threads et lancement de ceux-ci
 thread_syst = threading.Thread(target=thread_system, args=(my_syst_port,))
