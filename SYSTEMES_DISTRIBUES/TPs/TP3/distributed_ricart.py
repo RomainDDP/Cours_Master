@@ -15,57 +15,56 @@ SYSTEM_PORT = 30_000
 CLOCK = []
 CRITIC_SECTION = threading.Condition()
 FLAG_WAITING = False
+LAST_DEM = 999_999
+
 
 # Message class.
 class Message:
-    def __init__(self, id:int, clock:int, is_done=False):
-        self.id = id  
-        self.clock = clock 
+    def __init__(self, id: int, local_clock: [], message_clock: [], is_done=False):
+        self.id = id
+        self.local_clock = local_clock
+        self.message_clock = message_clock
         self.is_done = is_done
-
-    def clock_less_than(self, other: "Message") -> bool:
-        return self.clock < other.clock
 
     def encode(self) -> bytes:
         data = json.dumps({
-            "id" : self.id,
-            "clock" : self.clock,
-            "is_done" : self.is_done
+            "id": self.id,
+            "local_clock": self.local_clock,
+            "message_clock": self.message_clock,
+            "is_done": self.is_done
         })
         return data.encode()
 
     @staticmethod
-    def decode(msg : bytes | None) -> "Message":
+    def decode(msg: bytes | None) -> "Message":
         if msg is None:
             print("A problem occured with the message")
             exit()
         else:
             data = msg.decode()
             data = json.loads(data)
-            return Message(data["id"], data["clock"], data["is_done"])
+            return Message(data["id"], data["local_clock"], data["message_clock"], data["is_done"])
 
     def __str__(self) -> str:
-        return f"id : {self.id}, clock : {self.clock}, is_done : {self.is_done}"
+        return f"id: {self.id}, local_clock: {self.local_clock}, message_clock: {self.message_clock}, is_done: {self.is_done}"
 
 # ---- Definitions of the functions. ----
 
 # Setup de la socket d'écoute
-def socket_setup(port:int, ip='127.0.0.1', timeout=False, timer=5.0) -> socket.socket:
+def socket_setup(port: int, ip='127.0.0.1', timeout=False, timer=5.0) -> socket.socket:
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         s.bind((ip, port))
         s.listen(10)
         if timeout:
-            s.settimeout(timer) # timeout, la socket arrête d'écouter.
+            s.settimeout(timer)  # timeout, la socket arrête d'écouter.
 
         return s
     except socket.error as e:
         print("\033[31mAn error occured during the setup of the socket : \033[0m")
         print(e)
         exit()
-
-
 
 def listen_to(target_socket:socket.socket) -> bytes | None:
     try:
@@ -77,13 +76,13 @@ def listen_to(target_socket:socket.socket) -> bytes | None:
         return None 
 
 
-def send_to(port:int, data:bytes) -> bool:
+def send_to(port: int, data:bytes) -> bool:
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.connect(("localhost", port))
             s.send(data)
         return True
-    
+
     except socket.error as e:
         print(f"Cannot send anything to the target port : {port}. The connection might be closed and the program done.")
         print(e)
@@ -98,12 +97,27 @@ def is_OK(data):
         return False
 
 
-def ask_for_CS(is_done : bool) -> None:
-    msg = Message(my_id, CLOCK[my_id], is_done)
-    data = msg.encode()
+def ask_for_CS(is_done: bool) -> None:
+    global CLOCK
+    msg_clock = CLOCK.copy()
+    LAST_DEM = CLOCK[my_id] 
     for other in ports_syst:
+        CLOCK[my_id] += 1
+        msg = Message(my_id, CLOCK, msg_clock, is_done)
+        data = msg.encode()
         send_to(other, data)
 
+def update_clock(new_clock: []) -> []:
+    global CLOCK
+    
+    for i in range( len(CLOCK) ):
+        CLOCK[i] = max(new_clock[i], CLOCK[i])       
+
+def check_all_done():
+    res = True
+    for done in END_QUEUE:
+        res = done
+    return res
 
 # ---- Definitions of the threads. ----
 
@@ -113,13 +127,14 @@ def thread_player(player_port):
     global PLAYER_MOVES
     global CLOCK
     global FLAG_WAITING
+    global END_QUEUE
 
     player_socket = socket_setup(player_port)
     print(f"Thread listening on port {player_port} has started")
 
     for i in range(MAX_MOVES):
         clientsocket, _ = player_socket.accept()
-        CLOCK[my_id] += 1 # Hmmmmmm
+        CLOCK[my_id] += 1
         data = clientsocket.recv(1024)
 
         # Entering critical section
@@ -128,9 +143,14 @@ def thread_player(player_port):
             ask_for_CS(i == MAX_MOVES-1)
             CRITIC_SECTION.wait()
             for port in ports_disp:
-                send_to(port, data)
+                send_to(port, data) # Envoi aux display, on augmente pas la clock
+            
+            for sys in WAIT_QUEUE:
+                send_to(SYSTEM_PORT + sys, str(0).encode())
+                CLOCK[my_id] += 1
             FLAG_WAITING = False
-
+    
+    END_QUEUE[my_id] = True 
     print(f"Thread listening on {player_port} has finished")
     player_socket.close()
 
@@ -139,6 +159,7 @@ def thread_player(player_port):
 def thread_system(system_port):
     global PLAYER_MOVES
     global FLAG_WAITING
+    global END_QUEUE
 
     system_socket = socket_setup(system_port, timeout=False, timer=30.0)
     OK_count = 1
@@ -147,19 +168,31 @@ def thread_system(system_port):
     
     while True:
         data = listen_to(system_socket)
-        CLOCK[my_id] += 1 
-        
+        CLOCK[my_id] += 1
+       
+        print(f"J'ai recu qlq chose par un système...") 
         if(is_OK(data)):
-            OK_count += 1 
+            OK_count += 1
             if(OK_count == nb_players):
                 OK_count = 1
                 with CRITIC_SECTION:
                     CRITIC_SECTION.notify()
         else:
             msg = Message.decode(data)
-            send_to(ports_syst[msg.id], str(0).encode())
-            #if(FLAG_WAITING):
-            #    if(msg.clock_less_than(CLOCK[my_id]) is False):
+            update_clock(msg.local_clock)
+
+            END_QUEUE[msg.id] = msg.is_done
+            if(FLAG_WAITING):
+                if( msg.message_clock[msg.id] < LAST_DEM ):
+                    send_to(ports_syst[msg.id], str(0).encode())
+                    CLOCK[my_id] += 1
+                else:
+                    WAIT_QUEUE.append(msg.id)
+            else:
+                send_to(ports_syst[msg.id], str(0).encode())
+
+            if(check_all_done()):
+                break
 
     print(f"Thread listening for the token has finished")
     system_socket.close()        
@@ -183,12 +216,11 @@ player_port = ports[nb_players+my_id]
 # Ports of others systems
 ports_syst = [i+SYSTEM_PORT for i in range(nb_players)]
 my_syst_port = ports_syst[my_id]
-ports_syst.remove(my_syst_port)
 
 print(f"There are\033[33m {nb_players} \033[0mplayers and my id is\033[33m {my_id} \033[0m")
 print(f"The port used by my player is :\033[33m {player_port} \033[0m")
 print(f"The ports of displays are :\033[33m {ports_disp} \033[0m")
-print(f"The ports of others distributed systems are :\033[33m {ports_syst} \033[0m")
+print(f"The ports of distributed systems are :\033[33m {ports_syst} \033[0m")
 
 
 # init of the global values : 
