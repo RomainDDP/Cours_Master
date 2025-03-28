@@ -72,7 +72,7 @@ def listen_to(target_socket:socket.socket) -> bytes | None:
         data = clientsocket.recv(1024)
         return data
     except socket.timeout:
-        print(f"\033[33m30 seconds without token in system n°{my_id}.\033[0m")
+        print(f"\033[33m10 seconds without anything sent in system n°{my_id}.\033[0m")
         return None 
 
 
@@ -99,19 +99,24 @@ def is_OK(data):
 
 def ask_for_CS(is_done: bool) -> None:
     global CLOCK
+    global LAST_DEM
+
     msg_clock = CLOCK.copy()
     LAST_DEM = CLOCK[my_id] 
     for other in ports_syst:
         CLOCK[my_id] += 1
         msg = Message(my_id, CLOCK, msg_clock, is_done)
         data = msg.encode()
+        print(f"J'envoi le message : {msg}")
         send_to(other, data)
 
-def update_clock(new_clock: []) -> []:
+def update_clock(new_clock: list[int]) -> list[int]:
     global CLOCK
     
     for i in range( len(CLOCK) ):
-        CLOCK[i] = max(new_clock[i], CLOCK[i])       
+        CLOCK[i] = max(new_clock[i], CLOCK[i])
+
+    return CLOCK
 
 def check_all_done():
     res = True
@@ -145,9 +150,12 @@ def thread_player(player_port):
             for port in ports_disp:
                 send_to(port, data) # Envoi aux display, on augmente pas la clock
             
-            for sys in WAIT_QUEUE:
-                send_to(SYSTEM_PORT + sys, str(0).encode())
-                CLOCK[my_id] += 1
+            if (len(WAIT_QUEUE) > 0):
+                for sys in WAIT_QUEUE:
+                    print(WAIT_QUEUE)
+                    send_to(SYSTEM_PORT + sys, str(0).encode())
+                    WAIT_QUEUE.remove(sys)
+                    CLOCK[my_id] += 1
             FLAG_WAITING = False
     
     END_QUEUE[my_id] = True 
@@ -160,8 +168,9 @@ def thread_system(system_port):
     global PLAYER_MOVES
     global FLAG_WAITING
     global END_QUEUE
+    global CLOCK
 
-    system_socket = socket_setup(system_port, timeout=False, timer=30.0)
+    system_socket = socket_setup(system_port, timeout=False, timer=10.0)
     OK_count = 1
 
     print(f"Thread listening for the token has started")
@@ -179,7 +188,8 @@ def thread_system(system_port):
                     CRITIC_SECTION.notify()
         else:
             msg = Message.decode(data)
-            update_clock(msg.local_clock)
+            CLOCK = update_clock(msg.local_clock)
+            print(f"Message reçu : {msg}")
 
             END_QUEUE[msg.id] = msg.is_done
             if(FLAG_WAITING):
@@ -192,9 +202,10 @@ def thread_system(system_port):
                 send_to(ports_syst[msg.id], str(0).encode())
 
             if(check_all_done()):
+                print(END_QUEUE)
                 break
 
-    print(f"Thread listening for the token has finished")
+    print(f"Thread listening to other systems has finished")
     system_socket.close()        
 
 if len(sys.argv) < 5 or len(sys.argv) % 2 != 1:
@@ -226,6 +237,7 @@ print(f"The ports of distributed systems are :\033[33m {ports_syst} \033[0m")
 # init of the global values : 
 END_QUEUE = [False] * nb_players
 CLOCK = [0] * nb_players
+WAIT_QUEUE = []
 
 # Initialisation des threads et lancement de ceux-ci
 thread_syst = threading.Thread(target=thread_system, args=(my_syst_port,))
