@@ -1,0 +1,208 @@
+# !/usr/bin/python3
+# source ./env/bin/activate
+
+import sys
+import socket
+import threading
+import json
+
+# Constants
+SYSTEM_PORT = 30_000
+MAX_PLAYER_MOVE = 10
+
+# Message class.
+class Message:
+    def __init__(self, id: int, port: int):
+        self.id = id
+        self.port = port
+
+    def encode(self) -> bytes:
+        data = json.dumps({
+            "id": self.id,
+            "port": self.port,
+        })
+        return data.encode()
+
+    @staticmethod
+    def decode(msg: bytes | None) -> "Message":
+        if msg is None:
+            print("A problem occured with the message")
+            exit()
+        else:
+            data = msg.decode()
+            data = json.loads(data)
+            return Message(data["id"], data["port"])
+
+    def __str__(self) -> str:
+        return f"id: {self.id}, port: {self.port}"
+
+# ---- Definitions of the functions. ----
+
+# Setup of the listening socket. 
+def socket_setup(port: int, ip='127.0.0.1', timeout=False, timer=5.0) -> socket.socket:
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        s.bind((ip, port))
+        s.listen(10)
+
+        if timeout:
+            s.settimeout(timer) # Timeout to avoid waiting forever.
+
+        return s
+
+    except socket.error as e:
+        print("\033[31mFAILURE : An error occured during the creation of the socket : \033[0m")
+        print(e)
+        exit()
+
+def listen_to(target_socket:socket.socket) -> bytes | None:
+    try:
+        clientsocket, _ = target_socket.accept()
+        data = clientsocket.recv(1024)
+        return data
+
+    except socket.timeout:
+        print(f"\033[33mWARNING : {target_socket.timeout} seconds without anything sent in this system.\033[0m")
+        return None 
+
+def send_to(port: int, data:bytes) -> bool:
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.connect(("localhost", port))
+            s.send(data)
+        return True
+
+    except socket.error as e:
+        print(f"\033[33mWARNING : Cannot send anything to the target port : {port}. The connection might be closed and the program done.\033[0m")
+        print(e)
+        return False
+
+# Vérifie si le message est le Token.
+def is_Token(data):
+    try:
+        _ = int(data.decode())
+        return True
+    except:
+        return False
+
+def ask_for_CS(id: int, receivers: list[int], 
+               nb_moves: int) -> None:
+    this_sys = SYSTEM_PORT + id
+    receivers.remove(this_sys)
+ 
+    for sys in receivers:
+        msg = Message(id, this_sys)
+        data = msg.encode()
+        print(f"\033[34mJ'envoi le message : {msg}\033[0m")
+        send_to(sys, data)
+
+# ---- Definitions of the threads. ----
+
+# Listen on the port dedicated to the player and
+# put into a buffer its messages.
+def thread_player(player_port: int, mutex: threading.Condition, max_moves: int, 
+                  display_ports: list[int]) -> None:
+    global N_move_sent
+    global Flag_move_received
+
+    player_socket = socket_setup(player_port)
+    print(f"Thread listening on port {player_port} has started")
+    
+    N_move_sent = 0
+    for _ in range(max_moves):
+        Flag_move_received = False
+        clientsocket, _ = player_socket.accept()
+        move = clientsocket.recv(1024)
+
+        with mutex:
+            Flag_move_received = True
+            mutex.wait() # Waiting for the token.
+            for display in display_ports:
+                send_to(display, move)
+            N_move_sent += 1
+            mutex.notify() # Telling the system the data is sent.
+
+# Listen on the port dedicated to the system.
+# Receive messages from others systems then act accordingly.
+def thread_system(syst_port: int, my_id: int, mutex: threading.Condition, 
+                    nb_players: int) -> None:
+    
+    global N_move_sent
+    global Flag_move_received
+
+    system_socket = socket_setup(syst_port, timeout=True, timer=10.0)
+    print(f"Thread listening for the token has started")
+    next_syst = SYSTEM_PORT + ((my_id+1) % nb_players)
+
+    while True:
+        data = listen_to(system_socket)
+        if(data != None and is_Token(data)):
+            token_val = int(data.decode())
+            if(Flag_move_received is True):
+                with mutex:
+                    mutex.notify() # Telling the system the token is here.
+                    mutex.wait() # Waiting for the data to be sent.
+                    token_val += N_move_sent
+                    
+            data = str(token_val).encode()
+            send_to(next_syst, data)
+            if(token_val >= MAX_PLAYER_MOVE * nb_players):
+                break
+        else:
+
+
+
+
+# TODO : 
+# - Faire les réseaux
+
+def main():
+    if len(sys.argv) < 5 or len(sys.argv) % 2 != 1:
+        print("Usage : distributed_lists.py n id display0 display1 .. displayn-1 systemp0 systemp1 ... systempn-1")
+        print("Where : \n\t-n is the number of players\n\t-id the id of the player between 0 and n-1")
+        print("\t-displayX the port of the displays\n\t-systemX the port to contact other distributed applications")
+        sys.exit(0)
+
+    # global variables shared with threads and functions.
+    global ASK_CS
+    global TOKEN
+    global SUCCESSOR
+    global PREDECESSOR
+
+    # Processing of the arguments 
+    nb_players = int(sys.argv[1])
+    my_id = int(sys.argv[2])
+
+# init of the global values :
+    SYSTEM_PORT = 30_000
+
+    ports = [int(txt) for txt in sys.argv[3:]]
+    ports_disp = ports[:nb_players]
+
+# Port used by this system player
+    player_port = ports[nb_players+my_id]
+
+# Ports of others systems
+    ports_syst = [i+SYSTEM_PORT for i in range(nb_players)]
+    my_syst_port = ports_syst[my_id]
+
+    print(f"There are\033[33m {nb_players} \033[0mplayers and my id is\033[33m {my_id} \033[0m")
+    print(f"The port used by my player is :\033[33m {player_port} \033[0m")
+    print(f"The ports of displays are :\033[33m {ports_disp} \033[0m")
+    print(f"The ports of distributed systems are :\033[33m {ports_syst} \033[0m")
+
+# Initialisation des threads et lancement de ceux-ci
+    thread_syst = threading.Thread(target=thread_system, args=(my_syst_port,))
+    thread_play = threading.Thread(target=thread_player, args=(player_port,))
+
+    thread_syst.start()
+    thread_play.start()
+
+    thread_syst.join()
+    thread_play.join()
+
+    print(f"Everything is done.")
+
+if __name__ == "__main__":
+    main()
