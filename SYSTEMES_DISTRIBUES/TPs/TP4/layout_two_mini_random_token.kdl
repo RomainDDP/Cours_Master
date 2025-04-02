@@ -1,0 +1,24 @@
+layout {
+	pane split_direction="horizontal" {
+		pane split_direction="vertical" {
+			pane command="python3" {
+				args "display.py" "-m" "-n" "2" "-p" "9000"
+			}
+			pane command="python3" {
+				args "display.py" "-m" "-n" "2" "-p" "9001"
+			}
+		}
+		pane split_direction="vertical" size=5 {
+			pane command="python3" {
+				args "distributed_naimi.py" "2" "0" "9000" "9001" "8000" "8001"
+			}
+			pane command="python3" {
+				args "distributed_naimi.py" "2" "1" "9000" "9001" "8000" "8001"
+			}
+		}
+    }
+    pane start_suspended=true borderless=true size=3 command="bash" {
+    	 args "-c" "python3 ./player.py 0 8000 & sleep 2 && python3 ./player.py 1 8001 & wait"
+	 focus true
+    }
+}

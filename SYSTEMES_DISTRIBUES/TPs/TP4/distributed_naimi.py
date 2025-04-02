@@ -6,9 +6,15 @@ import socket
 import threading
 import json
 
-# Constants
+# globals variables to the threads
 SYSTEM_PORT = 30_000
 MAX_PLAYER_MOVE = 10
+
+Pere = SYSTEM_PORT 
+Next = None
+Requested_CS = False
+Token = -1
+
 
 # Message class.
 class Message:
@@ -86,76 +92,86 @@ def is_Token(data):
     except:
         return False
 
-def ask_for_CS(id: int, receivers: list[int], 
-               nb_moves: int) -> None:
+def request_CS(id: int) -> None:
+    global Requested_CS
     this_sys = SYSTEM_PORT + id
-    receivers.remove(this_sys)
+    Requested_CS = True
  
-    for sys in receivers:
+    if Pere is not None:
         msg = Message(id, this_sys)
         data = msg.encode()
-        print(f"\033[34mJ'envoi le message : {msg}\033[0m")
-        send_to(sys, data)
+        send_to(Pere, data)
+
+def release_CS():
+    global Requested_CS
+    global Token
+    global Next
+
+    Requested_CS = False
+    if Next is not None:
+        data = str(Token).encode()
+        send_to(Next, data)
 
 # ---- Definitions of the threads. ----
 
 # Listen on the port dedicated to the player and
 # put into a buffer its messages.
-def thread_player(player_port: int, mutex: threading.Condition, max_moves: int, 
+def thread_player(player_port: int, mutex: threading.Condition, id: int, 
                   display_ports: list[int]) -> None:
-    global N_move_sent
-    global Flag_move_received
 
     player_socket = socket_setup(player_port)
     print(f"Thread listening on port {player_port} has started")
-    
-    N_move_sent = 0
-    for _ in range(max_moves):
-        Flag_move_received = False
+ 
+    for _ in range(MAX_PLAYER_MOVE):
         clientsocket, _ = player_socket.accept()
         move = clientsocket.recv(1024)
 
         with mutex:
-            Flag_move_received = True
-            mutex.wait() # Waiting for the token.
+            request_CS(id)
+            if(Token < 0):
+                mutex.wait() # Waiting for the token.
+ 
             for display in display_ports:
                 send_to(display, move)
-            N_move_sent += 1
-            mutex.notify() # Telling the system the data is sent.
+            release_CS()
 
+    print("End of the thread listening for the player.")
 # Listen on the port dedicated to the system.
 # Receive messages from others systems then act accordingly.
-def thread_system(syst_port: int, my_id: int, mutex: threading.Condition, 
+def thread_system(syst_port: int, mutex: threading.Condition, 
                     nb_players: int) -> None:
-    
-    global N_move_sent
-    global Flag_move_received
+    global Requested_CS
+    global Token
+    global Next
 
-    system_socket = socket_setup(syst_port, timeout=True, timer=10.0)
+    system_socket = socket_setup(syst_port, timeout=True, timer=20.0)
     print(f"Thread listening for the token has started")
-    next_syst = SYSTEM_PORT + ((my_id+1) % nb_players)
 
     while True:
         data = listen_to(system_socket)
+        
+        # Upon receiving the token.
         if(data != None and is_Token(data)):
-            token_val = int(data.decode())
-            if(Flag_move_received is True):
+            Token = int(data.decode())
+            if(Requested_CS is True):
                 with mutex:
+                    Token += 1
                     mutex.notify() # Telling the system the token is here.
-                    mutex.wait() # Waiting for the data to be sent.
-                    token_val += N_move_sent
-                    
-            data = str(token_val).encode()
-            send_to(next_syst, data)
-            if(token_val >= MAX_PLAYER_MOVE * nb_players):
-                break
+
+        # Upon receiving a request.
         else:
-
-
-
-
-# TODO : 
-# - Faire les réseaux
+            msg = Message.decode(data)
+            if Pere is None:
+                if Requested_CS is True:
+                    Next = msg.port
+                else:
+                    Token = -1
+                    data = str(Token).encode()
+                    send_to(msg.port, data)
+                    Token = -1
+                    if(Token >= MAX_PLAYER_MOVE * nb_players):
+                        break
+    print("End of the thread listening for the token.")
 
 def main():
     if len(sys.argv) < 5 or len(sys.argv) % 2 != 1:
@@ -164,19 +180,9 @@ def main():
         print("\t-displayX the port of the displays\n\t-systemX the port to contact other distributed applications")
         sys.exit(0)
 
-    # global variables shared with threads and functions.
-    global ASK_CS
-    global TOKEN
-    global SUCCESSOR
-    global PREDECESSOR
-
     # Processing of the arguments 
     nb_players = int(sys.argv[1])
     my_id = int(sys.argv[2])
-
-# init of the global values :
-    SYSTEM_PORT = 30_000
-
     ports = [int(txt) for txt in sys.argv[3:]]
     ports_disp = ports[:nb_players]
 
@@ -192,9 +198,18 @@ def main():
     print(f"The ports of displays are :\033[33m {ports_disp} \033[0m")
     print(f"The ports of distributed systems are :\033[33m {ports_syst} \033[0m")
 
-# Initialisation des threads et lancement de ceux-ci
-    thread_syst = threading.Thread(target=thread_system, args=(my_syst_port,))
-    thread_play = threading.Thread(target=thread_player, args=(player_port,))
+    # Initialisation des threads et lancement de ceux-ci
+    global Pere
+    global Token
+
+    Token = 0
+    if my_id == 0:
+        Pere = None
+
+    mutex = threading.Condition()
+
+    thread_syst = threading.Thread(target=thread_system, args=(my_syst_port, mutex, nb_players))
+    thread_play = threading.Thread(target=thread_player, args=(player_port, mutex, my_id, ports_disp))
 
     thread_syst.start()
     thread_play.start()
