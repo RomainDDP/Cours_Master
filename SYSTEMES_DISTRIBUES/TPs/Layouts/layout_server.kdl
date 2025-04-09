@@ -1,7 +1,7 @@
 layout {
   pane split_direction="vertical" {
     pane command="python3" {
-      args "server.py" "5000" "9000" "9001"
+      args "Algos/server.py" "5000" "9000" "9001"
     }
     
     pane command="python3" {
