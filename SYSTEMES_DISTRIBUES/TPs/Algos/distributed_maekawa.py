@@ -6,6 +6,8 @@ import socket
 import threading
 import json
 import enum
+import math
+from collections import defaultdict
 
 # global variables to the threads
 SYSTEM_PORT = 30_000
@@ -32,8 +34,8 @@ class Message:
     def encode(self) -> bytes:
         data = json.dumps({
             "id": self.id,
-            "port": self.time,
-            "type": self.type
+            "time": self.time,
+            "type": self.type.value,
         })
         return data.encode()
 
@@ -45,11 +47,11 @@ class Message:
         else:
             data = recv_msg.decode()
             data = json.loads(data)
-            return Message(data["id"], data["time"], data["type"])
+            return Message(data["id"], data["time"], MessageType(data["type"]))
 
     def __str__(self) -> str:
-        return f"id: {self.id}, port: {self.time}, type: {self.type}"
-
+        return f"id: {self.id}, time: {self.time}, type: {self.type}"
+    
 # ---- Definitions of the functions. ----
 
 # Setup of the listening socket. 
@@ -101,23 +103,29 @@ def ask_CS(id, quorum):
 
     data = Message(id, CLOCK, MessageType.DEMANDE).encode()
     for site in quorum:
-        site += SYSTEM_PORT
-        send_to(site, data)
+        if site != id:
+            site += SYSTEM_PORT
+            send_to(site, data)
 
 
-def release_CS(id, port):
+def release_CS(id, quorum):
     global CS_FLAG
 
     CS_FLAG = False
     data = Message(id, CLOCK, MessageType.LIBERATION).encode()
-    send_to(port, data)
+    for site in quorum:
+        if site != id:
+            site += SYSTEM_PORT
+            send_to(site, data)
 
 # Listen on the port dedicated to the player and
 # put into a buffer its messages.
 def thread_player(player_port: int, mutex: threading.Condition, id: int, quorum: list[int],
                   display_ports: list[int]) -> None:
     global CLOCK
+    global CS_FLAG
     player_socket = socket_setup(player_port)
+    CS_FLAG = False
     print(f"Thread listening on port {player_port} has started")
 
     for _ in range(MAX_PLAYER_MOVE):
@@ -127,23 +135,24 @@ def thread_player(player_port: int, mutex: threading.Condition, id: int, quorum:
         
         ask_CS(id, quorum)
         with mutex:
+            print("jatt d'envoyer au disp")
             mutex.wait() # Waiting for the token.
             for display in display_ports:
                 send_to(display, move)
+        release_CS(id, quorum)
 
     print(f"End of the thread listening for the player.")
 
 
 # TODO :
-# S'occuper des demandes !
 # Add a la clock apres chaque envoi.
 
 # Receive messages from others systems then act accordingly.
-def thread_system(syst_port: int, mutex: threading.Condition) -> None:
+def thread_system(syst_port: int, mutex: threading.Condition, taille_quorum: int) -> None:
     
     global CLOCK
     global CS_FLAG
-    system_socket = socket_setup(syst_port)
+    system_socket = socket_setup(syst_port, timeout=True, timer=10)
     accord_count = 0
     accord_sent = False
     echec_count = 0
@@ -159,61 +168,84 @@ def thread_system(syst_port: int, mutex: threading.Condition) -> None:
         if(recv_msg == None):
             print("Message is None ???")
         
-        if(CS_FLAG):
-            data = Message(syst_port - SYSTEM_PORT, CLOCK, MessageType.ECHEC).encode()
-            send_to(sender_port, data)
-            continue
-
+        
+        print(f"HEHO JAI RECU UN TRUC: {recv_msg}")
         match recv_msg.type:
             case MessageType.DEMANDE:
+                print(f"demande recue de {recv_msg.id}")
                 waiting_file.append(recv_msg)
-                if(accord_sent is False):
+                
+                if(CS_FLAG):
+                    print("pas possible je suis en CS")
                     data = Message(syst_port - SYSTEM_PORT, CLOCK, MessageType.ECHEC).encode()
                     send_to(sender_port, data)
+                    CLOCK += 1
+                    continue
+                
+                if(accord_sent is False):
+                    print("jenvoi mon accord")
+                    data = Message(syst_port - SYSTEM_PORT, CLOCK, MessageType.ACCORD).encode()
+                    send_to(sender_port, data)
+                    CLOCK += 1
+                    accord_sent = True
                     continue
 
                 current = waiting_file[0].id
                 waiting_file.sort(key= lambda x: x.time)
 
                 if(current == waiting_file[0].id):
+                    print("il doit att dsl")
                     data = Message(syst_port - SYSTEM_PORT, CLOCK, MessageType.ECHEC).encode()
                     send_to(sender_port, data)
-                    continue
-
+                
+                else:
+                    print("on recup notre accord chez l'autre")
+                    data = Message(syst_port - SYSTEM_PORT, CLOCK, MessageType.SONDAGE).encode()
+                    sondage_port = SYSTEM_PORT + current
+                    send_to(sondage_port, data)
+                CLOCK += 1
 
 
             case MessageType.ACCORD:
+                print("accord recu")
                 accord_count += 1
                 restitution_bool = False
 
-                if (accord_count = len(quorum)):
+                if (accord_count == taille_quorum-1):
                     accord_count = 0
                     with mutex:
                         mutex.notify()
+                        print("c bon je peux envoyer au disp")
 
             case MessageType.SONDAGE:
+                print("sondage recu")
                 if(echec_count > 0 or restitution_bool):
-                    new_msg = Message(id, CLOCK, MessageType.RESTITUTION).encode()
+                    new_msg = Message(syst_port - SYSTEM_PORT, CLOCK, MessageType.RESTITUTION).encode()
                     restitution_bool = True
                     send_to(sender_port, new_msg)
+                    CLOCK += 1
 
 
             case MessageType.RESTITUTION:
-                new_msg = Message(id, CLOCK, MessageType.ACCORD).encode()
+                print("restitution recu")
+                new_msg = Message(syst_port - SYSTEM_PORT, CLOCK, MessageType.ACCORD).encode()
                 port = SYSTEM_PORT + waiting_file[0].id
                 send_to(port, new_msg)
+                CLOCK += 1
 
                 waiting_file.append(recv_msg).sort(key= lambda x: x.time)
 
 
 
             case MessageType.LIBERATION:
-                print(f"The system {recv_msg.type} is done with its CS.")
-                waiting_file.remove(recv_msg.id)
-
-                new_msg = Message(id, CLOCK, MessageType.ACCORD).encode()
-                port = SYSTEM_PORT + waiting_file[0].id
-                send_to(port, new_msg)
+                print(f"The system {recv_msg.id} is done with its CS.")
+                if len(waiting_file) != 0 and recv_msg.id in waiting_file:
+                    waiting_file.remove(recv_msg.id)
+                    new_msg = Message(syst_port - SYSTEM_PORT, CLOCK, MessageType.ACCORD).encode()
+                    port = SYSTEM_PORT + waiting_file[0].id
+                    send_to(port, new_msg)
+                    CLOCK += 1
+                accord_sent = False
 
             case MessageType.ECHEC:
                 print(f"It seems another process is in CS, I have to wait.")
@@ -222,6 +254,34 @@ def thread_system(syst_port: int, mutex: threading.Condition) -> None:
             case _:
                 print(f"Message is of no expected type : {recv_msg.type}")
 
+# Ca semble good avec 13 systèmes donc on va dire que c'est good.
+def generate_quorums(num_sites):
+
+    K = math.ceil(math.sqrt(num_sites))
+    quorums = defaultdict(set)
+
+    groups = [[] for _ in range(K)]
+    for i in range(num_sites):
+        groups[i % K].append(i)
+
+    for i in range(num_sites):
+        group_index = i % K
+        quorums[i].update(groups[group_index])
+        quorums[i].add(i)  # Ce serait con d'oublier le site
+
+    for i in range(num_sites):
+        for j in range(K):
+            quorums[i].add((i + j) % num_sites)
+
+    # On check que tout est good
+    for i in range(num_sites):
+        for j in range(num_sites):
+            if i != j and quorums[i].isdisjoint(quorums[j]):
+                print(f"PAS D'INTERSECTION ENTRE site {i} ET site {j} !!!")
+        if len(quorums[i]) < K:
+            print(f"Quorum de {i} n'est pas de taille K={K} !!!")
+
+    return quorums
 
 def main():
     if len(sys.argv) < 5 or len(sys.argv) % 2 != 1:
@@ -236,24 +296,26 @@ def main():
     ports = [int(txt) for txt in sys.argv[3:]]
     ports_disp = ports[:nb_players]
 
-# Port used by this system player
+    # Port used by this system player
     player_port = ports[nb_players+my_id]
 
-# Ports of others systems
+    # Ports of others systems
     ports_syst = [i+SYSTEM_PORT for i in range(nb_players)]
     my_syst_port = ports_syst[my_id]
-
+    quorums = generate_quorums(nb_players)
+    my_quorum = quorums[my_id]
+    
     print(f"There are\033[33m {nb_players} \033[0mplayers and my id is\033[33m {my_id} \033[0m")
     print(f"The port used by my player is :\033[33m {player_port} \033[0m")
     print(f"The ports of displays are :\033[33m {ports_disp} \033[0m")
     print(f"The ports of distributed systems are :\033[33m {ports_syst} \033[0m")
+    print(f"My quorum is :\033[33m {my_quorum} \033[0m")
 
     # Initialisation des threads et lancement de ceux-ci
-
     mutex = threading.Condition()
 
-    thread_syst = threading.Thread(target=thread_system, args=(my_syst_port, mutex, nb_players))
-    thread_play = threading.Thread(target=thread_player, args=(player_port, mutex, my_id, ports_disp))
+    thread_syst = threading.Thread(target=thread_system, args=(my_syst_port, mutex, len(my_quorum) ))
+    thread_play = threading.Thread(target=thread_player, args=(player_port, mutex, my_id, quorums, ports_disp))
 
     thread_syst.start()
     thread_play.start()
