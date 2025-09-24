@@ -1,5 +1,3 @@
-#include <stm32/gpio.h>
-
 #define GPIO_IDR 0x10
 #define GPIO_ODR 0x14
 #define GPIO_BASE 0x40020800
