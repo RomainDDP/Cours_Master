@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 #define WAIT_PSC 1000
-#define WAIT_DELAY (APBI_CLK / SC / 4) // APBI_CLK = 42Mhz
+#define WAIT_DELAY (APBI_CLK / WAIT_PSC / 4) // APBI_CLK = 42Mhz
 #define ONE_SECOND (WAIT_DELAY * 4)
 
 enum { NORMAL, ALERT, FROZEN };
@@ -10,8 +10,12 @@ int STATE = NORMAL;
 
 void init_TIM4 () {
 	TIM4_CR1 = 0;
+	// Prescaler - 1 parce que s'arrête après 0. 
 	TIM4_PSC = WAIT_PSC−1;
+
+	// Fréquence / prescaler 
 	TIM4_ARR = ONE_SECOND;
+
 	TIM4_EGR = TIM_UG;
 	TIM4_SR = 0;
 	GPIOD_MODER = REP_BITS(GPIOD_MODER, RED_LED*2, 2, GPIOD_MODER_OUT);

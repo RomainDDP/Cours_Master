@@ -38,7 +38,8 @@ LDFLAGS = \
 ADD_OBJECTS = \
 	$(STM32_ROOT)/lib/startup.o \
 	$(STM32_ROOT)/lib/tinyprintf.o \
-	$(STM32_ROOT)/lib/asm.o
+	$(STM32_ROOT)/lib/asm.o \
+	$(STM32_ROOT)/lib/my_lib.o
 SOURCES = $(wildcard ex*.c)
 ELVES = $(SOURCES:.c=.elf)
 
