@@ -1,4 +1,0 @@
-
-auto A
-
-	state S:

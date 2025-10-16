@@ -1,5 +1,3 @@
-#include <stdio.h>
-
 #define WAIT_PSC 1000
 #define WAIT_DELAY (APBI_CLK / WAIT_PSC / 4) // APBI_CLK = 42Mhz
 #define ONE_SECOND (WAIT_DELAY * 4)

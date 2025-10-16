@@ -2,3 +2,12 @@ __pycache__/
 PROJET/
 MICRO/TPs
 M2/CLB/repo_git
+**/.cache/
+*.iso
+**/Files/
+*.vm*
+*.nvram
+**.o
+**.log
+**.json
+**.elf
