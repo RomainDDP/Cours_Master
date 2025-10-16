@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE Diagram SYSTEM "rtdsDiagram.dtd">
+
+<Diagram language="sdl" type="sys" defaultColorsNeedFixing="FALSE" name="Phone" showMsgData="full" linksCrossingAllowed="FALSE" cellWidthMm="4">
+
+<DiagramPartition name="Part. 0" nbPagesH="1" nbPagesV="1">
+<PageSpecification pageWidth="21" pageHeight="29.7" topMargin="0" bottomMargin="0" leftMargin="0" rightMargin="0" pageFooter="FALSE" scaleFactor="1.0"/>
+
+<Symbol symbolId="SYMB1" type="sdlSysDgmFrm" xCenter="297" yCenter="420" fixedDimensions="TRUE" width="551" height="775" color="-" fillColor="-">
+<Description></Description>
+<Text></Text>
+
+<Symbol symbolId="SYMB3" type="sdlText" xCenter="253" yCenter="165" fixedDimensions="FALSE" width="308" height="242" color="#000000" fillColor="#FFFFFF">
+<Description></Description>
+<Text>/* Maximum number of pLocal processes */
+synonym NUM_PHONE = 5;
+
+/* Type for a phone number */
+syntype PhoneNumberType = Integer
+  default = 1;
+  constants 1..NUM_PHONE
+endsyntype;
+
+/* Type for the array of pLocal pids */
+newtype pLocalArray
+  Array(PhoneNumberType, PID)
+endnewtype;
+</Text>
+</Symbol>
+
+<Symbol symbolId="SYMB4" type="sdlText" xCenter="253" yCenter="473" fixedDimensions="FALSE" width="374" height="88" color="#000000" fillColor="#FFFFFF">
+<Description></Description>
+<Text>signal sCall(PhoneNumberType), sHangUp;
+signal sReady, sCallConf, sHangUpConf, sBusy;
+signal sCnxReq, sCnxConf, sDisReq, sDisConf;
+signal sGetId(PhoneNumberType), sId(ID), sError;
+</Text>
+</Symbol>
+</Symbol>
+</DiagramPartition>
+
+<DiagramPartition name="Part. 1" nbPagesH="1" nbPagesV="1">
+<PageSpecification pageWidth="21" pageHeight="29.7" topMargin="0" bottomMargin="0" leftMargin="0" rightMargin="0" pageFooter="FALSE" scaleFactor="1.0"/>
+
+<Symbol symbolId="SYMB5" type="sdlSysDgmFrm" xCenter="297" yCenter="420" fixedDimensions="TRUE" width="551" height="775" color="-" fillColor="-">
+<Description></Description>
+<Text></Text>
+
+<Symbol symbolId="SYMB6" type="sdlPrcs" xCenter="264" yCenter="319" fixedDimensions="TRUE" width="176" height="66" color="#000000" fillColor="#C4EFED">
+<Description></Description>
+<Text>pLocal(0, NUM_PHONE)
+</Text>
+</Symbol>
+
+<Symbol symbolId="SYMB7" type="sdlPrcs" xCenter="121" yCenter="132" fixedDimensions="FALSE" width="110" height="66" color="#000000" fillColor="#C4EFED">
+<Description></Description>
+<Text>pCentral
+</Text>
+</Symbol>
+</Symbol>
+
+<Link linkId="LINK4" type="chnl" textSegmentNum="0" color="#000000" reverseRead="FALSE" oriented="TRUE">
+<Text>cEnvLocal
+</Text>
+<Connector attachedSymbolId="SYMB6" type="chnl" isOutside="TRUE" side="x" position="0.0" endType="midarrow">
+<Text id="1">[sCall,
+sHangUp]
+</Text>
+<Text id="2"></Text>
+</Connector>
+<Connector attachedSymbolId="SYMB5" type="chnl" isOutside="FALSE" side="n" position="-0.0399274047187" endType="midarrow">
+<Text id="1">[sBusy,
+sCallConf,
+sHangUpConf]
+</Text>
+<Text id="2"></Text>
+</Connector>
+<LinkSegment orientation="v" length="-319"/>
+
+</Link>
+
+<Link linkId="LINK0" type="chnl" textSegmentNum="1" color="#000000" reverseRead="FALSE" oriented="TRUE">
+<Text>cSelf
+</Text>
+<Connector attachedSymbolId="SYMB6" type="chnl" isOutside="TRUE" side="x" position="0.0" endType="midarrow">
+<Text id="1">[]</Text>
+<Text id="2"></Text>
+</Connector>
+<Connector attachedSymbolId="SYMB6" type="chnl" isOutside="TRUE" side="y" position="0.0" endType="midarrow">
+<Text id="1">[sBusy,
+sCnxConf,
+sCnxReq,
+sDisConf,
+sDisReq]
+</Text>
+<Text id="2"></Text>
+</Connector>
+<LinkSegment orientation="v" length="121"/>
+<LinkSegment orientation="h" length="189"/>
+<LinkSegment orientation="v" length="-121"/>
+<LinkSegment orientation="h" length="-189"/>
+
+</Link>
+
+<Link linkId="LINK2" type="chnl" textSegmentNum="0" color="#000000" reverseRead="FALSE" oriented="TRUE">
+<Text>cEnvCentral
+</Text>
+<Connector attachedSymbolId="SYMB7" type="chnl" isOutside="TRUE" side="x" position="0.0" endType="midarrow">
+<Text id="1">[]</Text>
+<Text id="2"></Text>
+</Connector>
+<Connector attachedSymbolId="SYMB5" type="chnl" isOutside="FALSE" side="n" position="-0.558983666062" endType="midarrow">
+<Text id="1">[sReady]
+</Text>
+<Text id="2"></Text>
+</Connector>
+<LinkSegment orientation="v" length="-132"/>
+
+</Link>
+
+<Link linkId="LINK1" type="chnl" textSegmentNum="0" color="#000000" reverseRead="FALSE" oriented="TRUE">
+<Text>cInternal
+</Text>
+<Connector attachedSymbolId="SYMB7" type="chnl" isOutside="TRUE" side="x" position="0.0" endType="midarrow">
+<Text id="1">[sGetId]
+</Text>
+<Text id="2"></Text>
+</Connector>
+<Connector attachedSymbolId="SYMB6" type="chnl" isOutside="TRUE" side="y" position="0.0" endType="midarrow">
+<Text id="1">[sError,
+sId]
+</Text>
+<Text id="2"></Text>
+</Connector>
+<LinkSegment orientation="v" length="187"/>
+<LinkSegment orientation="h" length="143"/>
+
+</Link>
+</DiagramPartition>
+
+</Diagram>

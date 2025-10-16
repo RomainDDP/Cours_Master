@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE DictionaryObjects SYSTEM "rtdsDictionaryObjects.dtd">
+
+<DictionaryObjects version="11340" language="none" diagramType="sys">
+<Signal id="SIG1" name="sError">
+<DefiningSymbols>
+<SymbolReference symbolId="SYMB4" positions="3,41"/>
+</DefiningSymbols>
+</Signal>
+<Signal id="SIG10" name="sGetId">
+<SignalParameterType>PhoneNumberType</SignalParameterType>
+<SignalParameterTypeId typeItemId="ITEM2"/>
+<DefiningSymbols>
+<SymbolReference symbolId="SYMB4" positions="3,7"/>
+</DefiningSymbols>
+</Signal>
+<Signal id="SIG11" name="sCallConf">
+<DefiningSymbols>
+<SymbolReference symbolId="SYMB4" positions="1,15"/>
+</DefiningSymbols>
+</Signal>
+<Signal id="SIG12" name="sReady">
+<DefiningSymbols>
+<SymbolReference symbolId="SYMB4" positions="1,7"/>
+</DefiningSymbols>
+</Signal>
+<Signal id="SIG13" name="sHangUpConf">
+<DefiningSymbols>
+<SymbolReference symbolId="SYMB4" positions="1,26"/>
+</DefiningSymbols>
+</Signal>
+<Signal id="SIG2" name="sCnxConf">
+<DefiningSymbols>
+<SymbolReference symbolId="SYMB4" positions="2,16"/>
+</DefiningSymbols>
+</Signal>
+<Signal id="SIG3" name="sCall">
+<SignalParameterType>PhoneNumberType</SignalParameterType>
+<SignalParameterTypeId typeItemId="ITEM2"/>
+<DefiningSymbols>
+<SymbolReference symbolId="SYMB4" positions="0,7"/>
+</DefiningSymbols>
+</Signal>
+<Signal id="SIG4" name="sHangUp">
+<DefiningSymbols>
+<SymbolReference symbolId="SYMB4" positions="0,31"/>
+</DefiningSymbols>
+</Signal>
+<Signal id="SIG5" name="sCnxReq">
+<DefiningSymbols>
+<SymbolReference symbolId="SYMB4" positions="2,7"/>
+</DefiningSymbols>
+</Signal>
+<Signal id="SIG6" name="sDisReq">
+<DefiningSymbols>
+<SymbolReference symbolId="SYMB4" positions="2,26"/>
+</DefiningSymbols>
+</Signal>
+<Signal id="SIG7" name="sDisConf">
+<DefiningSymbols>
+<SymbolReference symbolId="SYMB4" positions="2,35"/>
+</DefiningSymbols>
+</Signal>
+<Signal id="SIG8" name="sBusy">
+<DefiningSymbols>
+<SymbolReference symbolId="SYMB4" positions="1,39"/>
+</DefiningSymbols>
+</Signal>
+<Signal id="SIG9" name="sId">
+<SignalParameterType>ID</SignalParameterType>
+<SignalParameterTypeId typeItemId="ITEM3"/>
+<DefiningSymbols>
+<SymbolReference symbolId="SYMB4" positions="3,32"/>
+</DefiningSymbols>
+</Signal>
+<Item id="ITEM1" type="system" name="Phone" scope="current" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
+<UsingSymbols>
+<SymbolReference symbolId="SYMB1"/>
+<SymbolReference symbolId="SYMB5"/>
+</UsingSymbols>
+<SignalWindow id="SIGWDW7" insideDiagram="TRUE">
+<ConnectorReference linkId="LINK4" isFrom="FALSE"/>
+<Connections>
+<Connection name="cEnvLocal"/>
+</Connections>
+<SentSignals>
+<SignalReference id="SIG3"/>
+<SignalReference id="SIG4"/>
+</SentSignals>
+<ReceivedSignals>
+<SignalReference id="SIG8"/>
+<SignalReference id="SIG11"/>
+<SignalReference id="SIG13"/>
+</ReceivedSignals>
+</SignalWindow>
+<SignalWindow id="SIGWDW8" insideDiagram="TRUE">
+<ConnectorReference linkId="LINK2" isFrom="FALSE"/>
+<Connections>
+<Connection name="cEnvCentral"/>
+</Connections>
+<ReceivedSignals>
+<SignalReference id="SIG12"/>
+</ReceivedSignals>
+</SignalWindow>
+<Channel name="cEnvLocal" fromSignalWindow="SIGWDW1" toSignalWindow="SIGWDW7"/>
+<Channel name="cSelf" fromSignalWindow="SIGWDW2" toSignalWindow="SIGWDW3"/>
+<Channel name="cInternal" fromSignalWindow="SIGWDW6" toSignalWindow="SIGWDW4"/>
+<Channel name="cEnvCentral" fromSignalWindow="SIGWDW5" toSignalWindow="SIGWDW8"/>
+</Item>
+<Item id="ITEM2" type="type" name="PhoneNumberType" scope="global" defined="FALSE" anchorItemId="ITEM1" searchPolicy="-1" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
+<UsingSymbols>
+<SymbolReference symbolId="SYMB4"/>
+</UsingSymbols>
+</Item>
+<Item id="ITEM3" type="type" name="ID" scope="global" defined="FALSE" anchorItemId="ITEM1" searchPolicy="-1" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
+<UsingSymbols>
+<SymbolReference symbolId="SYMB4"/>
+</UsingSymbols>
+</Item>
+<Item id="ITEM4" type="process" name="pLocal" parentId="ITEM1" scope="none" minInstances="0" maxInstances="NUM_PHONE" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
+<DefiningSymbols>
+<SymbolReference symbolId="SYMB6"/>
+</DefiningSymbols>
+<UsingSymbols>
+<SymbolReference symbolId="SYMB6"/>
+</UsingSymbols>
+<SignalWindow id="SIGWDW4" insideDiagram="FALSE">
+<ConnectorReference linkId="LINK1" isFrom="FALSE"/>
+<SentSignals>
+<SignalReference id="SIG10"/>
+</SentSignals>
+<ReceivedSignals>
+<SignalReference id="SIG1"/>
+<SignalReference id="SIG9"/>
+</ReceivedSignals>
+</SignalWindow>
+<SignalWindow id="SIGWDW1" insideDiagram="FALSE">
+<ConnectorReference linkId="LINK4" isFrom="TRUE"/>
+<SentSignals>
+<SignalReference id="SIG8"/>
+<SignalReference id="SIG11"/>
+<SignalReference id="SIG13"/>
+</SentSignals>
+<ReceivedSignals>
+<SignalReference id="SIG3"/>
+<SignalReference id="SIG4"/>
+</ReceivedSignals>
+</SignalWindow>
+<SignalWindow id="SIGWDW2" insideDiagram="FALSE">
+<ConnectorReference linkId="LINK0" isFrom="TRUE"/>
+<SentSignals>
+<SignalReference id="SIG8"/>
+<SignalReference id="SIG2"/>
+<SignalReference id="SIG5"/>
+<SignalReference id="SIG7"/>
+<SignalReference id="SIG6"/>
+</SentSignals>
+</SignalWindow>
+<SignalWindow id="SIGWDW3" insideDiagram="FALSE">
+<ConnectorReference linkId="LINK0" isFrom="FALSE"/>
+<ReceivedSignals>
+<SignalReference id="SIG8"/>
+<SignalReference id="SIG2"/>
+<SignalReference id="SIG5"/>
+<SignalReference id="SIG7"/>
+<SignalReference id="SIG6"/>
+</ReceivedSignals>
+</SignalWindow>
+</Item>
+<Item id="ITEM5" type="process" name="pCentral" parentId="ITEM1" scope="none" minInstances="1" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
+<DefiningSymbols>
+<SymbolReference symbolId="SYMB7"/>
+</DefiningSymbols>
+<UsingSymbols>
+<SymbolReference symbolId="SYMB7"/>
+</UsingSymbols>
+<SignalWindow id="SIGWDW5" insideDiagram="FALSE">
+<ConnectorReference linkId="LINK2" isFrom="TRUE"/>
+<SentSignals>
+<SignalReference id="SIG12"/>
+</SentSignals>
+</SignalWindow>
+<SignalWindow id="SIGWDW6" insideDiagram="FALSE">
+<ConnectorReference linkId="LINK1" isFrom="TRUE"/>
+<SentSignals>
+<SignalReference id="SIG1"/>
+<SignalReference id="SIG9"/>
+</SentSignals>
+<ReceivedSignals>
+<SignalReference id="SIG10"/>
+</ReceivedSignals>
+</SignalWindow>
+</Item>
+</DictionaryObjects>

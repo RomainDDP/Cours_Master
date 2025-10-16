@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE Diagram SYSTEM "rtdsDiagram.dtd">
+
+<MscDiagram message_params_visibility="full">
+<LifelineOrdering identifiers="_LIFELINE_1 _LIFELINE_2 _LIFELINE_3 _LIFELINE_4 _LIFELINE_5"/>
+<MscEventRow>
+<MscEvent lifeline_ids="_LIFELINE_1" event_type="PROCESS_START" color="-" text="Opérateur
+" text_size="71 -" background="-"/>
+<MscEvent lifeline_ids="_LIFELINE_2" event_type="PROCESS_START" color="-" text="Superviseur
+" text_size="85 -" background="-"/>
+<MscEvent lifeline_ids="_LIFELINE_3" event_type="PROCESS_START" color="-" text="Robot_Alim
+" text_size="78 -" background="-"/>
+<MscEvent lifeline_ids="_LIFELINE_4" event_type="PROCESS_START" color="-" text="Machine
+" text_size="57 -" background="-"/>
+<MscEvent lifeline_ids="_LIFELINE_5" event_type="PROCESS_START" color="-" text="Robot_Retrait
+" text_size="99 -" background="-"/>
+<MscEvent event_type="ABSOLUTE_TIME" color="#000000" text=""/>
+</MscEventRow>
+<MscEventRow>
+<MscEvent lifeline_ids="_LIFELINE_1" event_type="MESSAGE_SEND" color="#000000" text="Nouvelle_Piece(Code)
+" identifier="_LINK_5"/>
+<MscEvent lifeline_ids="_LIFELINE_2" event_type="MESSAGE_RECEIVE" color="#000000" text="Nouvelle_Piece(Code)
+" identifier="_LINK_5"/>
+<MscEvent event_type="ABSOLUTE_TIME" color="#000000" text=""/>
+</MscEventRow>
+<MscEventRow>
+<MscEvent lifeline_ids="_LIFELINE_2" event_type="CONDITION_START" color="-" text="Code in 
+" identifier="_SYMBOL_3" background="-"/>
+<MscEvent event_type="ABSOLUTE_TIME" color="#000000" text=""/>
+</MscEventRow>
+<MscEventRow>
+<MscEvent event_type="CONDITION_END" color="-" text="Code in 
+" identifier="_SYMBOL_3"/>
+<MscEvent event_type="ABSOLUTE_TIME" color="#000000" text=""/>
+</MscEventRow>
+<MscEventRow>
+<MscEvent lifeline_ids="_LIFELINE_2" event_type="MESSAGE_SEND" color="#000000" text="Ordre_Depot
+" identifier="_LINK_9"/>
+<MscEvent lifeline_ids="_LIFELINE_3" event_type="MESSAGE_RECEIVE" color="#000000" text="Ordre_Depot
+" identifier="_LINK_9"/>
+<MscEvent event_type="ABSOLUTE_TIME" color="#000000" text=""/>
+</MscEventRow>
+<MscEventRow>
+<MscEvent lifeline_ids="_LIFELINE_3" event_type="MESSAGE_SEND" color="#000000" text="Depot_Ok
+" identifier="_LINK_15"/>
+<MscEvent lifeline_ids="_LIFELINE_2" event_type="MESSAGE_RECEIVE" color="#000000" text="Depot_Ok
+" identifier="_LINK_15"/>
+<MscEvent event_type="ABSOLUTE_TIME" color="#000000" text=""/>
+</MscEventRow>
+<MscEventRow>
+<MscEvent lifeline_ids="_LIFELINE_2" event_type="MESSAGE_SEND" color="#000000" text="Preparer(code)
+" identifier="_LINK_19"/>
+<MscEvent lifeline_ids="_LIFELINE_4" event_type="MESSAGE_RECEIVE" color="#000000" text="Preparer(code)
+" identifier="_LINK_19"/>
+<MscEvent event_type="ABSOLUTE_TIME" color="#000000" text=""/>
+</MscEventRow>
+<MscEventRow>
+<MscEvent lifeline_ids="_LIFELINE_4" event_type="MESSAGE_SEND" color="#000000" text="Fin_Preparation(code)
+" identifier="_LINK_24"/>
+<MscEvent lifeline_ids="_LIFELINE_2" event_type="MESSAGE_RECEIVE" color="#000000" text="Fin_Preparation(code)
+" identifier="_LINK_24"/>
+<MscEvent event_type="ABSOLUTE_TIME" color="#000000" text=""/>
+</MscEventRow>
+<MscEventRow>
+<MscEvent lifeline_ids="_LIFELINE_2" event_type="MESSAGE_SEND" color="#000000" text="Depot_Convoyeur
+" identifier="_LINK_34"/>
+<MscEvent lifeline_ids="_LIFELINE_4" event_type="MESSAGE_RECEIVE" color="#000000" text="Depot_Convoyeur
+" identifier="_LINK_34"/>
+<MscEvent event_type="ABSOLUTE_TIME" color="#000000" text=""/>
+</MscEventRow>
+<MscEventRow>
+<MscEvent lifeline_ids="_LIFELINE_2" event_type="MESSAGE_SEND" color="#000000" text="Ordre_Retrait
+" identifier="_LINK_28"/>
+<MscEvent lifeline_ids="_LIFELINE_5" event_type="MESSAGE_RECEIVE" color="#000000" text="Ordre_Retrait
+" identifier="_LINK_28"/>
+<MscEvent event_type="ABSOLUTE_TIME" color="#000000" text=""/>
+</MscEventRow>
+<MscEventRow>
+<MscEvent lifeline_ids="_LIFELINE_5" event_type="MESSAGE_SEND" color="#000000" text="Retrait_Piece
+" identifier="_LINK_31"/>
+<MscEvent lifeline_ids="_LIFELINE_2" event_type="MESSAGE_RECEIVE" color="#000000" text="Retrait_Piece
+" identifier="_LINK_31"/>
+<MscEvent event_type="ABSOLUTE_TIME" color="#000000" text=""/>
+</MscEventRow>
+<MscEventRow>
+<MscEvent event_type="ABSOLUTE_TIME" color="#000000" text=""/>
+</MscEventRow>
+<PageSpecification pageWidth="21" pageHeight="29.7" topMargin="0" bottomMargin="0" leftMargin="0" rightMargin="0" pageFooter="FALSE" scaleFactor="1.0"/>
+</MscDiagram>
