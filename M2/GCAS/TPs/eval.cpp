@@ -91,8 +91,6 @@ optional<value_t> BitFieldExpr::eval() const {
 	// Shift a gauche puis shift a droite pour ne garder que les bits
 	// qui nous intéressent.
 	return (*expr << (32 - *hi - 1)) >> ((32 - *hi - 1) + *lo);
-
-	return {};
 }
 
 

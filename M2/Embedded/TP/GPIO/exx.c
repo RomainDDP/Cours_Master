@@ -52,30 +52,30 @@ void /*__attribute__((interrupt("IRQ")))*/ handle_TIM4() {
 	//GPIOD_BSRR = 1 << RED_LED;
 }
 
-void init_TIM4(){
-	DISABLE_IRQS;
-
-	NVIC_ICER(TIM4_IRQ>>5) |= 1 << (TIM4_IRQ & 0X1f);
-	NVIC_IRQ(TIM4_IRQ) = (uint32_t)handle_TIM4;
-	NVIC_IPR(TIM4_IRQ) = 0;
-
-	NVIC_ICPR(TIM4_IRQ >> 5) |= 1 << (TIM4_IRQ & 0X1f);
-	NVIC_ISER(TIM4_IRQ >> 5) |= 1 << (TIM4_IRQ & 0X1f);
-
-	//TIM4_CR1 &= ~TIM_CEN;
-	TIM4_CR1 = 0;
-	TIM4_PSC = WAIT_PSC;
-	//TIM4_ARR = HALF_PERIOD;
-	TIM4_ARR = WAIT_DELAY;
-	TIM4_EGR = TIM_UG;
-	TIM4_SR = 0;
-	TIM4_CR1 = TIM_ARPE;
-	TIM4_SR &= ~TIM_UIF;
-	TIM4_DIER = TIM_UIE;
-
-	//ENABLE_IRQS;
-	//TIM4_CR1 |= TIM_CEN;
-}
+// void init_TIM4(){
+// 	DISABLE_IRQS;
+//
+// 	NVIC_ICER(TIM4_IRQ>>5) |= 1 << (TIM4_IRQ & 0X1f);
+// 	NVIC_IRQ(TIM4_IRQ) = (uint32_t)handle_TIM4;
+// 	NVIC_IPR(TIM4_IRQ) = 0;
+//
+// 	NVIC_ICPR(TIM4_IRQ >> 5) |= 1 << (TIM4_IRQ & 0X1f);
+// 	NVIC_ISER(TIM4_IRQ >> 5) |= 1 << (TIM4_IRQ & 0X1f);
+//
+// 	//TIM4_CR1 &= ~TIM_CEN;
+// 	TIM4_CR1 = 0;
+// 	TIM4_PSC = WAIT_PSC;
+// 	//TIM4_ARR = HALF_PERIOD;
+// 	TIM4_ARR = WAIT_DELAY;
+// 	TIM4_EGR = TIM_UG;
+// 	TIM4_SR = 0;
+// 	TIM4_CR1 = TIM_ARPE;
+// 	TIM4_SR &= ~TIM_UIF;
+// 	TIM4_DIER = TIM_UIE;
+//
+// 	//ENABLE_IRQS;
+// 	//TIM4_CR1 |= TIM_CEN;
+// }
 
 int main() {
 	printf("\nStarting...\n");
@@ -85,7 +85,7 @@ int main() {
 	RCC_APB1ENR |= RCC_TIM4EN;
 
 	init();
-	init_TIM4();
+	//init_TIM4();
 
 	ENABLE_IRQS;
 	TIM4_CR1 |= TIM_CEN;

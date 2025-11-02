@@ -29,6 +29,13 @@ Quad::reg_t MemExpr::gen(QuadProgram& prog) {
 	case Declaration::VAR:
 		return prog.regFor(static_cast<VarDecl *>(_dec)->name());
 
+	case Declaration::REG: {
+		auto r = prog.newReg();
+		auto addr = prog.newReg();
+		prog.emit(Quad::seti(addr, static_cast<RegDecl *>(_dec)->address()));
+		Quad::load(r, addr);
+		return r;
+	}
 
 	default:
 		assert(false);
@@ -45,6 +52,10 @@ Quad::reg_t UnopExpr::gen(QuadProgram& prog) {
 	case NEG:
 		prog.emit(Quad::neg(r, ro));
 		break;
+	
+	default:
+		prog.emit(Quad::inv(r, ro));
+		break;
 	}
 	return r;
 }
@@ -52,24 +63,100 @@ Quad::reg_t UnopExpr::gen(QuadProgram& prog) {
 
 ///
 Quad::reg_t BinopExpr::gen(QuadProgram& prog) {
+	auto r1 = _arg1->gen(prog);
+	auto r2 = _arg2->gen(prog);
+
 	auto rd = prog.newReg();
+
+	Quad q;
+
+	switch(_op) {
+		case ADD:
+			q = Quad::add(rd, r1, r2);
+			break;
+		case SUB:
+			q = Quad::sub(rd, r1, r2);
+			break;
+		case MUL:
+			q = Quad::mul(rd, r1, r2);
+			break;
+		case DIV:
+			q = Quad::div(rd, r1, r2);
+			break;
+		case MOD:
+			q = Quad::mod(rd, r1, r2);
+			break;
+		case BIT_AND:
+			q = Quad::and_(rd, r1, r2);
+			break;
+		case BIT_OR:
+			q = Quad::or_(rd, r1, r2);
+			break;
+		case XOR:
+			q = Quad::xor_(rd, r1, r2);
+			break;
+		case SHL:
+			q = Quad::shl(rd, r1, r2);
+			break;
+		case SHR:
+			q = Quad::shr(rd, r1, r2);
+			break;
+		case ROL:
+			q = Quad::rol(rd, r1, r2);
+			break;
+		case ROR:
+			q = Quad::ror(rd, r1, r2);
+			break;
+		default:
+			assert(false);
+			break;
+	}
+
+	prog.emit(q);
+	
 	return rd;
 }
 
 
 ///
 Quad::reg_t BitFieldExpr::gen(QuadProgram& prog) {
+	// Make new regs for e, l and u
+
 	return -1;
 }
 
 
 ///
 void CompCond::gen(Quad::lab_t lab_true, Quad::lab_t lab_false, QuadProgram& prog) const {
+	
 	auto a1 = _arg1->gen(prog);
 	auto a2 = _arg2->gen(prog);
+	Quad q;
+	
 	switch(_comp) {
-	case EQ: prog.emit(Quad::goto_eq(lab_true, a1, a2)); break;
+		case EQ: 
+			q = Quad::goto_eq(lab_true, a1, a2);
+			break;
+		case NE:
+			q = Quad::goto_ne(lab_true, a1, a2);
+		case GE:
+			q = Quad::goto_ge(lab_true, a1, a2);
+			break;
+		case LE:
+			q = Quad::goto_le(lab_true, a1, a2);
+			break;
+		case GT:
+			q = Quad::goto_gt(lab_true, a1, a2);
+			break;
+		case LT:
+			q = Quad::goto_lt(lab_true, a1, a2);
+			break;
+		default:
+			assert(false);
+			break;
 	}
+
+	prog.emit(q);
 }
 
 ///
@@ -79,24 +166,64 @@ void NotCond::gen(Quad::lab_t lab_true, Quad::lab_t lab_false, QuadProgram& prog
 
 ///
 void AndCond::gen(Quad::lab_t lab_true, Quad::lab_t lab_false, QuadProgram& prog) const {
+		
+	_cond1->gen(lab_true, lab_false, prog);
+	_cond2->gen(lab_true, lab_false, prog);
+
+	// TODO
 }
 
 ///
 void OrCond::gen(Quad::lab_t lab_true, Quad::lab_t lab_false, QuadProgram& prog) const {
+	
+	_cond1->gen(lab_true, lab_false, prog);
+	_cond2->gen(lab_true, lab_false, prog);
+
+	// TODO
+
 }
 
 
 ///
-void NOPStatement::gen(AutoDecl& automaton, QuadProgram& prog) const {
-}
+void NOPStatement::gen(AutoDecl& automaton, QuadProgram& prog) const {}
 
 ///
 void SeqStatement::gen(AutoDecl& automaton, QuadProgram& prog) const {
+
+	prog.comment(pos);
+	_stmt1->gen(automaton, prog);
+	_stmt2->gen(automaton, prog);
 }
 
 ///
 void IfStatement::gen(AutoDecl& automaton, QuadProgram& prog) const {
 	prog.comment(pos);
+
+	// Make new labels
+	auto l_true = prog.newLab();
+	auto l_false = prog.newLab();
+
+	switch(_cond->type()) {
+
+		case Condition::COMP:
+			static_cast<CompCond *>(_cond)->gen(l_true, l_false, prog);
+			break;
+		case Condition::NOT:
+			static_cast<NotCond *>(_cond)->gen(l_true, l_false, prog);
+			break;
+		case Condition::AND:
+			static_cast<AndCond *>(_cond)->gen(l_true, l_false, prog);
+			break;
+		case Condition::OR:
+			static_cast<OrCond *>(_cond)->gen(l_true, l_false, prog);
+			break;
+
+		default:
+			assert(false);
+			break;
+
+	}
+
 }
 
 ///

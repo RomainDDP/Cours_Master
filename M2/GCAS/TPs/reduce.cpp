@@ -26,7 +26,7 @@ Expression *BinopExpr::reduce() {
 	
 	_arg1 = _arg1->reduce();
 	_arg2 = _arg2->reduce();
-
+	
 	if (_arg1->type() == CST and _arg2->type() == CST)
 		return new ConstExpr(*eval());
 	else
@@ -34,6 +34,7 @@ Expression *BinopExpr::reduce() {
 }
 
 Expression *BitFieldExpr::reduce() {
+	
 	_lo = _lo->reduce();
 	_hi = _hi->reduce();
 	_expr = _expr->reduce();
@@ -60,6 +61,10 @@ void SetStatement::reduce() {
 }
 
 void SetFieldStatement::reduce() {
+	_expr = _expr->reduce();
+	_lo = _lo->reduce();
+	_hi = _hi->reduce();
+
 }
 
 void IfStatement::reduce() {

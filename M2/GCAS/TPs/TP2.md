@@ -212,7 +212,7 @@ Maintenant nous allons pouvoir commencer à réaliser la traduction à propremen
 
 Donc il va falloir :
 
-1. Implanter la traduction des constantes dans les expressions (fonction `ConstExpression::gen()`).
+1. Implanter la traduction des constantes dans les expressions (fonction `ConstExpr::gen()`).
 
 2. Implanter la traduction de l'affectation dans les instructions (fonction `SetStatement::gen()`) seulement avec _i_ (déjà implanté, observez la traduction).
 
@@ -248,7 +248,7 @@ approche que pour le langage C.
 
 _(e >> l) & ((1 << (u -l + 1)) - 1)
 
-1. Dans un premier temps, on pourra appeler le sous-programme `L10000` (constante `field_get_call`) qui prend comme paramètre _e_ dans R0, _u_ dans R1 et _l_ dans R2. Le résultat est dans R0.
+    1. Dans un premier temps, on pourra appeler le sous-programme `L10000` (constante `field_get_call`) qui prend comme paramètre _e_ dans R0, _u_ dans R1 et _l_ dans R2. Le résultat est dans R0.
 
 > NOTE : Ri a pour code de registre (Quad::reg_t), i. Les 16 premiers registres virtuels sont réservés pour représenter les registres matériels.
 

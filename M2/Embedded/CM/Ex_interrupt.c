@@ -22,11 +22,11 @@ void init_B1() {
     GPIOA_MODER = REP_BITS(GPIOA_MODER, BUTTON*2, 2, GPIO_MODER_IN);
     GPIOA_PUPDR = REP_BITS(GPIO_PUPDR, BUTTON*2, 2, GPIO_PUPDR_PD);
 
-    SYSCFG_EXTICR1 = REP_BITS(SYSCFG_EXTICR1, 1*4, 4, GPIO); // lie GPIOA1 à EXTI1
+    SYSCFG_EXTICR1 = REP_BITS(SYSCFG_EXTICR1, 1*4, 4, GPIO); // lier GPIOA1 à EXTI1
     EXTI_RTSR |= 1 << BUTTON;   // rising edge
     EXTI_IMR &= ~(1 << BUTTON); // disable interrupt
     EXTI_FTSR |= 1 << BUTTON;   // falling edge
-    EXTI_PR |= 1 << BUTTON;     // clear pendaing
+    EXTI_PR |= 1 << BUTTON;     // clear pending
     EXTI_IMR |= 1 << BUTTON;    // enable interrupt
 
     NVIC_ICER(EXTI1_IRQ/32) = 1 << (EXTI1_IRQ%32);

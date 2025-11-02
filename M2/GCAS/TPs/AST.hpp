@@ -6,12 +6,13 @@
 #include <optional>
 #include <string>
 #include <vector>
+#include <cstdint>
 
 #include "Quad.hpp"
 
 using namespace std;
 
-typedef unsigned long value_t;
+typedef uint32_t value_t;
 
 class AutoDecl;
 class Expression;

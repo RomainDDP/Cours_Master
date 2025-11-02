@@ -114,7 +114,7 @@
 #define GPIOE_AFRH		_IOREG(GPIO_BASE(4), 0x24)
 
 
-/*
+
 #define GPIO_MODER_SET(n, m)	_SET(GPIO_MODER(GPIO_INST(n)), GPIO_NUM(n)*2+1, GPIO_NUM(n)*2, m)
 #define GPIO_OSPEEDR_SET(n, m)	_SET(GPIO_OSPEEDR(GPIO_INST(n)), GPIO_NUM(n)*2+1, GPIO_NUM(n)*2, m)
 #define GPIO_PUPDR_SET(n, m)	_SET(GPIO_PUPDR(GPIO_INST(n)), GPIO_NUM(n)*2+1, GPIO_NUM(n)*2, m)
@@ -131,6 +131,6 @@
 #define GPIOG(n)	(0x60|(n))
 #define GPIOH(n)	(0x70|(n))
 #define GPIOI(n)	(0x80|(n))
-*/
+
 
 #endif	// STM32F4_GPIO_H
