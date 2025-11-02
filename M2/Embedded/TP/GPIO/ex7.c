@@ -1,97 +1,100 @@
-/* Embedded Systems - Exercise 7 */
-
-#include "stm32f4/tim.h"
+#include "stm32f4/io.h"
 #include <stdint.h>
-#include <stm32f4/exti.h>
-#include <stm32f4/gpio.h>
-#include <stm32f4/io.h>
-#include <stm32f4/nvic.h>
-#include <stm32f4/rcc.h>
-#include <stm32f4/syscfg.h>
 #include <tinyprintf.h>
-
-// GPIOD
-#define GREEN_LED 12
-#define ORANGE_LED 13
-#define RED_LED 14
-#define BLUE_LED 15
-
-// GPIODA
-#define USER_BUTTON 0
+#include <stm32f4/rcc.h>
+#include <stm32f4/gpio.h>
+#include <stm32f4/nvic.h>
+#include <stm32f4/exti.h>
+#include <stm32f4/syscfg.h>
+#include <stm32f4/tim.h>
 
 #define PSC 1000
-#define DELAY_50 (APB1_CLK / PSC / 20)
+#define CLICK_TIME (APB1_CLK / PSC / 30)
 
-uint32_t last_b = 0;
-uint8_t b_state;
+#define GREEN_LED	12
 
-void handle_button();
+#define USER_BUT	0
+#define SYSCFG_EXTICR_GPIOA 0x0
 
-void init_b0() {
-    DISABLE_IRQS;
-
-    SYSCFG_EXTICR1 = REP_BITS(SYSCFG_EXTICR1, 0, 4, 0);
-    EXTI_RTSR |= 1 << 0;
-    EXTI_FTSR |= 1 << 0;
-    EXTI_IMR |= 1 << 0;
-    EXTI_PR |= 1 << 0;
-
-    NVIC_ICER(EXTI0_IRQ >> 5) = 1 << (EXTI0_IRQ & 0X1F);
-    NVIC_IRQ(EXTI0_IRQ) = (uint32_t)handle_button;
-    NVIC_IPR(EXTI0_IRQ) = 0;
-    NVIC_ICPR(EXTI0_IRQ >> 5) = 1 << (EXTI0_IRQ & 0X1F);
-    NVIC_ISER(EXTI0_IRQ >> 5) = 1 << (EXTI0_IRQ & 0X1F);
-
-    ENABLE_IRQS;
-}
-
-void init_TIM4() {
-    TIM4_CR1 = 0;
-    TIM4_PSC = PSC - 1;
-    TIM4_ARR = DELAY_50 - 1;
-    TIM4_EGR = TIM_UG;
-    TIM4_SR = 0;
+void switchLed(int led) {
+    GPIOD_ODR ^= (1 << led); 
 }
 
 void handle_button() {
-    while ((TIM4_SR & TIM_UIF) == 0) {
-        if ((GPIOA_IDR & (1 << USER_BUTTON)) != 0) {
-            b_state = 1;
-            last_b = TIM4_CNT;
-        } else if (b_state) {
-            uint32_t now = TIM4_CNT;
-            if (now <= last_b)
-                now += DELAY_50;
-            if (now - last_b >= DELAY_50) {
-                b_state = 0;
-                GPIOD_ODR ^= (1 << GREEN_LED);
-            }
-        }
+    if((GPIOA_IDR & (1 << USER_BUT)) != 0) {
+        NVIC_ICPR(EXTI0_IRQ/32) = 1 << (EXTI0_IRQ%32); // clear pending
+        NVIC_ICER(EXTI0_IRQ/32) = 1 << (EXTI0_IRQ%32); // disable interrupt
+        
+		switchLed(GREEN_LED);
+
+		TIM4_EGR = TIM_UG;
+		TIM4_SR = 0;
+		TIM4_CR1 = TIM_CEN;
+
+		while((TIM4_SR & TIM_UIF) == 0)
+		{
+			if ((GPIOA_IDR & (1 << button)) != 0) {
+				TIM4_EGR = TIM_UG;
+				TIM4_SR = 0;
+			}
+		}
+
+		TIM4_CR1 = 0;
+
+        NVIC_ICPR(EXTI0_IRQ/32) = 1 << (EXTI0_IRQ%32); // clear pending
+        NVIC_ISER(EXTI0_IRQ/32) = 1 << (EXTI0_IRQ%32); // enable interrupt
     }
-    EXTI_PR |= 1 << 0;
-    NVIC_ICPR(EXTI0_IRQ >> 5) |= 1 << (EXTI0_IRQ & 0X1F);
+}
+
+void init_led(int led) {
+    GPIOD_MODER = REP_BITS(GPIOD_MODER, led*2, 2, GPIO_MODER_OUT); // Mode output
+    GPIOD_OTYPER &= ~(1 << led); // Mode push pull (envoie le courant dans la led)
+}
+
+void init_TIM4(int psc, int delay){
+	TIM4_CR1 = 0;               // Disable timer
+	TIM4_PSC = psc - 1;         // setup prescalor
+	TIM4_ARR = delay;           // setup period
+	TIM4_EGR = TIM_UG;          // reset counter
+	TIM4_SR = 0;                // reset status
+}
+
+
+void init_button(void *handler) {
+    int button = 0;
+    GPIOA_MODER = REP_BITS(GPIOA_MODER, button*2, 2, GPIO_MODER_IN); // Mode input
+    GPIOA_PUPDR = REP_BITS(GPIOA_PUPDR, button*2, 2, GPIO_PUPDR_PD); // Resistance de pull-down
+
+    SYSCFG_EXTICR1 = REP_BITS(SYSCFG_EXTICR1, button*4, 4, SYSCFG_EXTICR_GPIOA); // EXTI1 (Px1) generate interrupt based on GPIOA
+    EXTI_IMR &= ~(1 << button);     // disable interrupt
+    EXTI_RTSR |= 1 << button;       // rising edge
+    EXTI_FTSR &= ~(1 << button);    // falling edge
+    EXTI_PR |= 1 << button;         // clear pendaing
+    EXTI_IMR |= 1 << button;        // enable interrupt
+
+    NVIC_ICER(EXTI0_IRQ/32) = 1 << (EXTI0_IRQ%32); // disable interrupt in NVIC
+    NVIC_IRQ(EXTI0_IRQ) = (uint32_t)handler;       // config handler
+    NVIC_IPR(EXTI0_IRQ) = 0;                       // setup priority
+    NVIC_ICPR(EXTI0_IRQ/32) = 1 << (EXTI0_IRQ%32); // clear pending in NVIC
+    NVIC_ISER(EXTI0_IRQ/32) = 1 << (EXTI0_IRQ%32); // enable interrupt in NVIC
 }
 
 int main() {
-    printf("\nStarting...\n");
+	printf("\nStarting...\n");
 
-    // RCC init
-    RCC_AHB1ENR |= RCC_GPIOAEN;
-    RCC_AHB1ENR |= RCC_GPIODEN;
-    RCC_APB1ENR |= RCC_TIM4EN;
+	// RCC init
+	RCC_AHB1ENR |= RCC_GPIOAEN;
+	RCC_AHB1ENR |= RCC_GPIODEN;
+	RCC_APB1ENR |= RCC_TIM4EN;
 
-    // GPIO init
-    GPIO_MODER_SET(GPIOA(USER_BUTTON), GPIO_MODER_IN);
-    GPIO_PUPDR_SET(GPIOA(USER_BUTTON), GPIO_PUPDR_PD);
+    init_TIM4(PSC, CLICK_TIME);
+    init_led(GREEN_LED);
+    init_button(handle_button);
 
-    GPIO_MODER_SET(GPIOD(GREEN_LED), GPIO_MODER_OUT);
-    GPIOD_OTYPER = GPIOD_OTYPER & ~(1 << GREEN_LED);
-
-    init_TIM4();
-    init_b0();
-
-    // main loop
-    printf("Endless loop!\n");
-    while (1) {
-    }
+	// main loop
+	printf("Endless loop!\n");
+	while(1) {
+	}
 }
+
+

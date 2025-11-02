@@ -1,5 +1,3 @@
-/* Embedded Systems - Exercise 9 */
-
 #include <tinyprintf.h>
 #include <stm32f4/rcc.h>
 #include <stm32f4/gpio.h>
@@ -8,16 +6,49 @@
 #include <stm32f4/syscfg.h>
 #include <stm32f4/tim.h>
 
+#define PSC 1000
+#define BLINK_TIME (APB1_CLK / PSC / 2)
 
-// GPIOD
-#define GREEN_LED	12
-#define ORANGE_LED	13
-#define RED_LED		14
-#define BLUE_LED	15
+#define NB_LED  6
+int LEDS[NB_LED] = {1,8,9,10,11}; // leds on GPIOD
 
-// GPIODA
-#define USER_BUT	0
+void switchLed(int led) {
+    GPIOD_ODR ^= (1 << led);
+}
 
+void init_led(int led) {
+    GPIOD_MODER = REP_BITS(GPIOD_MODER, led*2, 2, GPIO_MODER_OUT); // Mode output
+    GPIOD_OTYPER &= ~(1<<led); // Mode push pull (envoie le courant dans la led)
+}
+
+void handle_TIM4()  {
+    static int current_led = 0;
+    if ((TIM4_SR & TIM_UIF) == 0) {
+        return;
+    }
+    TIM4_SR &= ~TIM_UIF;
+
+    switchLed(LEDS[current_led]);
+    current_led = (current_led+1)%NB_LED;
+}
+
+void init_TIM4(int psc, int delay, void* handler){
+    DISABLE_IRQS;
+
+	TIM4_CR1 = 0;               // Disable timer
+	TIM4_PSC = psc - 1;         // setup prescalor
+	TIM4_ARR = delay;           // setup period
+	TIM4_EGR = TIM_UG;          // reset counter
+	TIM4_SR = 0;                // reset status
+    TIM4_DIER = TIM_UIE;        // update interrupt enabled
+    NVIC_ICER(TIM4_IRQ/32) = 1 <<(TIM4_IRQ%32);     // Interrupt Clear-Enable (desable interrupt)
+    NVIC_IRQ(TIM4_IRQ) = (uint32_t)handle_TIM4;     // Define handler
+    NVIC_IPR(TIM4_IRQ) = 0;     // InterruptPriority
+    NVIC_ICPR(TIM4_IRQ/32) = 1 << (TIM4_IRQ % 32);  // Interrupt clear pending
+    NVIC_ISER(TIM4_IRQ/32) = 1 << (TIM4_IRQ % 32);  // Interrupt Set-Enable (enable interrupt)
+
+    ENABLE_IRQS;
+}
 
 int main() {
 	printf("\nStarting...\n");
@@ -27,13 +58,20 @@ int main() {
 	RCC_AHB1ENR |= RCC_GPIODEN;
 	RCC_APB1ENR |= RCC_TIM4EN;
 
-	// initialization
+    init_TIM4(PSC, BLINK_TIME,handle_TIM4);
+    for(int i = 0; i < NB_LED; i++) {
+        init_led(LEDS[i]);
+    }
+    
+    TIM4_CR1 = TIM_CEN; // Enable counter
 
 	// main loop
 	printf("Endless loop!\n");
 	while(1) {
+        NOP;
 	}
 
 }
+
 
 
