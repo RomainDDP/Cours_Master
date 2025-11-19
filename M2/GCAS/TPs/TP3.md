@@ -1,4 +1,4 @@
-# TP2 : Traduction en quadruplets
+# TP3 : Traduction en quadruplets
 
 ---
 Le TP se clôture par la remise des sources que vous aurez produits dans le dépôt correspondant sur Moodle.

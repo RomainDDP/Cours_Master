@@ -121,8 +121,21 @@ Quad::reg_t BinopExpr::gen(QuadProgram& prog) {
 ///
 Quad::reg_t BitFieldExpr::gen(QuadProgram& prog) {
 	// Make new regs for e, l and u
+	auto expr = _expr->gen(prog);
+	auto low = _lo->gen(prog);
+	auto high = _hi->gen(prog);
 
-	return -1;
+	auto res = prog.newReg();
+
+	prog.emit(Quad::set(0, expr));
+	prog.emit(Quad::set(1, high));
+	prog.emit(Quad::set(2, low));
+
+	prog.emit(Quad::call(field_get_call));
+	
+	prog.emit(Quad::set(res, 0));
+
+	return res;
 }
 
 
@@ -155,7 +168,7 @@ void CompCond::gen(Quad::lab_t lab_true, Quad::lab_t lab_false, QuadProgram& pro
 			assert(false);
 			break;
 	}
-
+	prog.emit(Quad::goto_(lab_false));
 	prog.emit(q);
 }
 
@@ -166,20 +179,23 @@ void NotCond::gen(Quad::lab_t lab_true, Quad::lab_t lab_false, QuadProgram& prog
 
 ///
 void AndCond::gen(Quad::lab_t lab_true, Quad::lab_t lab_false, QuadProgram& prog) const {
-		
-	_cond1->gen(lab_true, lab_false, prog);
+
+	auto L1 = prog.newLab();
+
+	_cond1->gen(L1, lab_false, prog);
+	prog.emit(Quad::lab(L1));
 	_cond2->gen(lab_true, lab_false, prog);
 
-	// TODO
 }
 
 ///
 void OrCond::gen(Quad::lab_t lab_true, Quad::lab_t lab_false, QuadProgram& prog) const {
-	
-	_cond1->gen(lab_true, lab_false, prog);
-	_cond2->gen(lab_true, lab_false, prog);
 
-	// TODO
+	auto L1 = prog.newLab();
+
+	_cond1->gen(lab_true, L1, prog);
+	prog.emit(Quad::lab(L1));
+	_cond2->gen(lab_true, lab_false, prog);
 
 }
 
@@ -203,26 +219,7 @@ void IfStatement::gen(AutoDecl& automaton, QuadProgram& prog) const {
 	auto l_true = prog.newLab();
 	auto l_false = prog.newLab();
 
-	switch(_cond->type()) {
-
-		case Condition::COMP:
-			static_cast<CompCond *>(_cond)->gen(l_true, l_false, prog);
-			break;
-		case Condition::NOT:
-			static_cast<NotCond *>(_cond)->gen(l_true, l_false, prog);
-			break;
-		case Condition::AND:
-			static_cast<AndCond *>(_cond)->gen(l_true, l_false, prog);
-			break;
-		case Condition::OR:
-			static_cast<OrCond *>(_cond)->gen(l_true, l_false, prog);
-			break;
-
-		default:
-			assert(false);
-			break;
-
-	}
+	_cond->gen(l_true, l_false, prog);
 
 }
 
@@ -250,11 +247,30 @@ void SetStatement::gen(AutoDecl& automaton, QuadProgram& prog) const {
 ///
 void SetFieldStatement::gen(AutoDecl& automaton, QuadProgram& prog) const {
 	prog.comment(pos);
+
+	auto mem = MemExpr(_dec).gen(prog); 
+	auto expr = _expr->gen(prog);
+	auto low = _lo->gen(prog);
+	auto high = _hi->gen(prog);
+
+	auto res = prog.newReg();
+
+	prog.emit(Quad::set(0, mem));
+	prog.emit(Quad::set(1, high));
+	prog.emit(Quad::set(2, low));
+	prog.emit(Quad::set(3, expr));
+
+	prog.emit(Quad::call(field_set_call));
+
+	prog.emit(Quad::set(res, 0));
 }
 
 ///
 void GotoStatement::gen(AutoDecl& automaton, QuadProgram& prog) const {
+	
 	prog.comment(pos);
+	prog.emit(Quad::goto_(_state->label()));
+
 }
 
 ///
@@ -271,6 +287,19 @@ void StopStatement::gen(AutoDecl& automaton, QuadProgram& prog) const {
  */
 void When::gen(AutoDecl& automaton, QuadProgram& prog) {
 	prog.comment(pos);
+	
+	//auto addr = _sig->reg()->
+
+	// Negation turned off
+	if(_neg == 0) {
+		if (_sig->bit() == 1) 
+			_action->gen(automaton, prog);
+	}
+	else { // Negation is turned on !
+		if (_sig->bit() == 0) 
+			_action->gen(automaton, prog);
+	}
+
 }
 
 

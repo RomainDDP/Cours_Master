@@ -33,7 +33,7 @@ void handle_button() {
 
 		while((TIM4_SR & TIM_UIF) == 0)
 		{
-			if ((GPIOA_IDR & (1 << button)) != 0) {
+			if ((GPIOA_IDR & (1 << USER_BUT)) != 0) {
 				TIM4_EGR = TIM_UG;
 				TIM4_SR = 0;
 			}

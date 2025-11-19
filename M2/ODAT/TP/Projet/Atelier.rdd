@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE Diagram SYSTEM "rtdsDiagram.dtd">
+
+<Diagram language="sdl" type="sys" defaultColorsNeedFixing="FALSE" name="Atelier" showMsgData="full" linksCrossingAllowed="FALSE" cellWidthMm="4">
+
+<DiagramPartition name="Part. 0" nbPagesH="1" nbPagesV="1">
+<PageSpecification pageWidth="21" pageHeight="29.7" topMargin="0" bottomMargin="0" leftMargin="0" rightMargin="0" pageFooter="FALSE" scaleFactor="1.0"/>
+
+<Symbol symbolId="SYMB1" type="sdlSysDgmFrm" xCenter="297" yCenter="420" fixedDimensions="TRUE" width="551" height="775" color="-" fillColor="-">
+<Description></Description>
+<Text></Text>
+
+<Symbol symbolId="SYMB2" type="sdlText" xCenter="264" yCenter="165" fixedDimensions="FALSE" width="462" height="110" color="#000000" fillColor="#FFFFFF">
+<Description></Description>
+<Text>signal sReady;
+signal sNouvelle_Piece(Code), sPiece_terminee(Code);
+signal sOrdre_Depot, sDepot_Ok, sOrdre_Retrait, sRetrait_Ok;
+signal sPreparer(Code), sFin_Preparation(Code);
+signal sDepot_Convoyeur;
+</Text>
+</Symbol>
+
+<Symbol symbolId="SYMB3" type="sdlText" xCenter="198" yCenter="363" fixedDimensions="FALSE" width="264" height="154" color="#000000" fillColor="#FFFFFF">
+<Description></Description>
+<Text>/* Number of machines */
+Synonym NUM_MACHINE Integer = 3;
+
+syntype Code = Integer
+  default 1;
+  constants 1..NUM_MACHINE;
+endsyntype;
+</Text>
+</Symbol>
+</Symbol>
+</DiagramPartition>
+
+</Diagram>
