@@ -8,8 +8,6 @@ using namespace std;
  * Map the variable to stack offset.
  */
 
-/**
- */
 StackMapper::StackMapper(): _offset(0), _global(0) {
 }
 
@@ -97,43 +95,120 @@ RegAlloc::RegAlloc(StackMapper& mapper, list<Inst>& insts)
  * @param inst		Instruction sto process.
  */
 void RegAlloc::process(Inst inst) {
+    // 1. Traiter les paramètres (lecture / écriture)
+    for (int i = 0; i < Inst::param_num; ++i) {
+        Param &p = inst[i];
+        switch (p.type()) {
+        case Param::READ:
+            processRead(p);
+            break;
+        case Param::WRITE:
+            processWrite(p);
+            break;
+        default:
+            // NONE ou CST → rien à faire
+            break;
+        }
+    }
 
-	// add the fixed instruction
-	_insts.push_back(inst);
-	_fried.clear();
+    // 2. Libérer les registres lus non-variables (morts après cette instruction)
+    for (auto vreg : _fried) {
+        if (!isVar(vreg))
+            free(vreg);
+    }
+    _fried.clear();
+
+    // 3. Ajouter l'instruction fixée à la liste
+    _insts.push_back(inst);
 }
+
 
 /**
  * Complete the allocation of a BB by generating store of modified global variables.
  */
 void RegAlloc::complete() {
+    // Sauvegarder toutes les variables IOML modifiées dans ce BB
+    for (auto vreg : _written) {
+        store(vreg);
+    }
+    _written.clear();
 }
+
 
 /**
  * Allocate a read register.
  * @param param		Parameter to fix.
  */
 void RegAlloc::processRead(Param& param) {
-	assert("parameter should be a read parameter!" && param.type() == Param::READ);
+    assert("parameter should be a read parameter!" && param.type() == Param::READ);
+
+    Quad::reg_t vreg = param.value();
+
+    // Allouer le registre matériel si nécessaire
+    Quad::reg_t hreg = allocate(vreg);
+
+    // Si c'est une variable IOML, on charge sa valeur depuis la pile
+    if (isVar(vreg))
+        load(vreg);
+
+    // Remplacer le virtuel par le matériel dans le paramètre
+    param = Param::read(hreg);
+
+    // Registres non-variables : morts après usage dans ce BB → marqués à libérer
+    if (!isVar(vreg))
+        _fried.push_back(vreg);
 }
+
 
 /**
  * Allocata write register.
  * @param param		Parameter to fix.
  */
 void RegAlloc::processWrite(Param& param) {
+    assert("parameter should be a write parameter!" && param.type() == Param::WRITE);
+
+    Quad::reg_t vreg = param.value();
+
+    // Allouer le registre matériel si nécessaire
+    Quad::reg_t hreg = allocate(vreg);
+
+    // Remplacer dans le paramètre
+    param = Param::write(hreg);
+
+    // Si c'est une variable IOML, on l'ajoute à la liste des registres à sauver
+    if (isVar(vreg)) {
+        // éviter les doublons
+        bool already = false;
+        for (auto r : _written)
+            if (r == vreg) { already = true; break; }
+        if (!already)
+            _written.push_back(vreg);
+    }
 }
+
 
 /**
  * Allocate an hardware register through the free ones or spill a register
  * to get a new free hardware register.
  */
 Quad::reg_t RegAlloc::allocate(Quad::reg_t reg) {
-	Quad::reg_t r;
+    // Si déjà alloué, on renvoie le registre matériel existant
+    auto it = _map.find(reg);
+    if (it != _map.end())
+        return it->second;
 
+    // Plus de registre dispo → erreur
+    if (_avail.empty())
+        assert("no more registers available!" && false);
 
-	return r;
+    // On prend un registre matériel libre
+    Quad::reg_t hreg = _avail.front();
+    _avail.pop_front();
+
+    _map[reg] = hreg;
+    return hreg;
 }
+
 
 /**
  * Generate code to spill the given virtual register.
@@ -150,7 +225,17 @@ void RegAlloc::spill(Quad::reg_t reg) {
  * @param reg	Virtual register to free.
  */
 void RegAlloc::free(Quad::reg_t reg) {
+    auto it = _map.find(reg);
+    if (it == _map.end())
+        return; // rien à libérer
+
+    Quad::reg_t hreg = it->second;
+    _map.erase(it);
+
+    // On remet le registre matériel dans la liste des dispos
+    _avail.push_front(hreg);
 }
+
 
 /**
  * Generate a store instruction to the stack.

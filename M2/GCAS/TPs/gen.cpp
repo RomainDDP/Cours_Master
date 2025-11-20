@@ -18,29 +18,29 @@ Quad::reg_t ConstExpr::gen(QuadProgram& prog) {
 
 ///
 Quad::reg_t MemExpr::gen(QuadProgram& prog) {
-	switch(_dec->type()) {
+    switch(_dec->type()) {
 
-	case Declaration::CST: {
-			auto r = prog.newReg();
-			prog.emit(Quad::seti(r, static_cast<ConstDecl *>(_dec)->value()));
-			return r;
-		}
+    case Declaration::CST: {
+        auto r = prog.newReg();
+        prog.emit(Quad::seti(r, static_cast<ConstDecl *>(_dec)->value()));
+        return r;
+    }
 
-	case Declaration::VAR:
-		return prog.regFor(static_cast<VarDecl *>(_dec)->name());
+    case Declaration::VAR:
+        return prog.regFor(static_cast<VarDecl *>(_dec)->name());
 
-	case Declaration::REG: {
-		auto r = prog.newReg();
-		auto addr = prog.newReg();
-		prog.emit(Quad::seti(addr, static_cast<RegDecl *>(_dec)->address()));
-		Quad::load(r, addr);
-		return r;
-	}
+    case Declaration::REG: {
+        auto r = prog.newReg();
+        auto addr = prog.newReg();
+        prog.emit(Quad::seti(addr, static_cast<RegDecl *>(_dec)->address()));
+        prog.emit(Quad::load(r, addr));
+        return r;
+    }
 
-	default:
-		assert(false);
-		return 0;
-	}
+    default:
+        assert(false);
+        return 0;
+    }
 }
 
 
@@ -120,23 +120,42 @@ Quad::reg_t BinopExpr::gen(QuadProgram& prog) {
 
 ///
 Quad::reg_t BitFieldExpr::gen(QuadProgram& prog) {
-	// Make new regs for e, l and u
-	auto expr = _expr->gen(prog);
-	auto low = _lo->gen(prog);
-	auto high = _hi->gen(prog);
+    
+	auto r_e  = _expr->gen(prog);
+    auto r_hi = _hi->gen(prog);
+    auto r_lo = _lo->gen(prog);
 
-	auto res = prog.newReg();
+    // Test optimisation : hi == lo ?
+    auto r_res = prog.newReg();
 
-	prog.emit(Quad::set(0, expr));
-	prog.emit(Quad::set(1, high));
-	prog.emit(Quad::set(2, low));
+    // Si hi et lo sont constants → simplification directe
+    auto v_hi = _hi->eval();
+    auto v_lo = _lo->eval();
 
-	prog.emit(Quad::call(field_get_call));
-	
-	prog.emit(Quad::set(res, 0));
+    if (v_hi && v_lo && *v_hi == *v_lo) {
+        // (e >> lo) & 1
+        auto r_shift = prog.newReg();
+        auto r_one   = prog.newReg();
 
-	return res;
+        prog.emit(Quad::shr(r_shift, r_e, r_lo));   // e >> lo
+        prog.emit(Quad::seti(r_one, 1));
+        prog.emit(Quad::and_(r_res, r_shift, r_one));
+        return r_res;
+    }
+
+    // Sinon : appel du sous-programme field_get
+    prog.emit(Quad::set(0, r_e));
+    prog.emit(Quad::set(1, r_hi));
+    prog.emit(Quad::set(2, r_lo));
+
+    prog.emit(Quad::call(field_get_call));
+
+    // Résultat dans R0
+    prog.emit(Quad::set(r_res, 0));
+
+    return r_res;
 }
+
 
 
 ///
@@ -152,6 +171,7 @@ void CompCond::gen(Quad::lab_t lab_true, Quad::lab_t lab_false, QuadProgram& pro
 			break;
 		case NE:
 			q = Quad::goto_ne(lab_true, a1, a2);
+			break;
 		case GE:
 			q = Quad::goto_ge(lab_true, a1, a2);
 			break;
@@ -166,10 +186,10 @@ void CompCond::gen(Quad::lab_t lab_true, Quad::lab_t lab_false, QuadProgram& pro
 			break;
 		default:
 			assert(false);
-			break;
 	}
-	prog.emit(Quad::goto_(lab_false));
+
 	prog.emit(q);
+	prog.emit(Quad::goto_(lab_false));
 }
 
 ///
@@ -213,15 +233,31 @@ void SeqStatement::gen(AutoDecl& automaton, QuadProgram& prog) const {
 
 ///
 void IfStatement::gen(AutoDecl& automaton, QuadProgram& prog) const {
-	prog.comment(pos);
+    prog.comment(pos);
 
-	// Make new labels
-	auto l_true = prog.newLab();
-	auto l_false = prog.newLab();
+    // Labels
+    auto L_true  = prog.newLab();
+    auto L_false = prog.newLab();
+    auto L_end   = prog.newLab();
 
-	_cond->gen(l_true, l_false, prog);
+    // 1. Génération du test conditionnel
+    _cond->gen(L_true, L_false, prog);
 
+    // 2. Bloc TRUE
+    prog.emit(Quad::lab(L_true));
+    _stmt1->gen(automaton, prog);
+    prog.emit(Quad::goto_(L_end));
+
+    // 3. Bloc FALSE
+    prog.emit(Quad::lab(L_false));
+    if(_stmt2) {
+        _stmt2->gen(automaton, prog);
+    }
+
+    // 4. Label de sortie
+    prog.emit(Quad::lab(L_end));
 }
+
 
 ///
 void SetStatement::gen(AutoDecl& automaton, QuadProgram& prog) const {
@@ -287,20 +323,49 @@ void StopStatement::gen(AutoDecl& automaton, QuadProgram& prog) const {
  */
 void When::gen(AutoDecl& automaton, QuadProgram& prog) {
 	prog.comment(pos);
-	
-	//auto addr = _sig->reg()->
 
-	// Negation turned off
-	if(_neg == 0) {
-		if (_sig->bit() == 1) 
-			_action->gen(automaton, prog);
-	}
-	else { // Negation is turned on !
-		if (_sig->bit() == 0) 
-			_action->gen(automaton, prog);
-	}
+    // 1. Lire le registre du signal
+    auto r_addr = prog.newReg();
+    auto r_sig  = prog.newReg();
 
-}
+    prog.emit(Quad::seti(r_addr, _sig->reg()->address()));
+    prog.emit(Quad::load(r_sig, r_addr));
+
+    // 2. Extraire le bit : (r_sig >> bit) & 1
+    auto r_bitIndex = prog.newReg();
+    prog.emit(Quad::seti(r_bitIndex, _sig->bit()));
+
+    auto r_shifted = prog.newReg();
+    auto r_bit     = prog.newReg();
+    auto r_one     = prog.newReg();
+
+    prog.emit(Quad::shr(r_shifted, r_sig, r_bitIndex));
+    prog.emit(Quad::seti(r_one, 1));
+    prog.emit(Quad::and_(r_bit, r_shifted, r_one));
+
+    // 3. Label de fin de clause
+    auto L_end = prog.newLab();
+
+    // 4. Tester le bit selon la négation
+    //    r_bit vaut 0 ou 1
+    auto r_zero = prog.newReg();
+    prog.emit(Quad::seti(r_zero, 0));
+
+    if(!_neg) {
+        // when BIT == 1
+        // si (r_bit == 0) -> goto L_end
+        prog.emit(Quad::goto_eq(L_end, r_bit, r_zero));
+    } else {
+        // when !BIT
+        // si (r_bit != 0) -> goto L_end
+        prog.emit(Quad::goto_ne(L_end, r_bit, r_zero));
+    }
+
+    // 5. Action de la clause
+    _action->gen(automaton, prog);
+
+    // 6. LABEL L_end
+    prog.emit(Quad::lab(L_end));}
 
 
 /**
@@ -310,7 +375,7 @@ void When::gen(AutoDecl& automaton, QuadProgram& prog) {
  */
 void State::gen(AutoDecl& automaton, QuadProgram& prog) {
 	prog.emit(Quad::lab(_label));
-	_action->gen(automaton, prog);;
+	_action->gen(automaton, prog);
 	auto loop = prog.newLab();
 	prog.emit(Quad::lab(loop));
 	for(auto when: _whens)
