@@ -26,6 +26,7 @@ public:
 	RegAlloc(StackMapper& mapper, list<Inst>& insts);
 	void process(Inst inst);
 	void complete();
+
 private:
 	void processRead(Param& param);
 	void processWrite(Param& param);
@@ -35,7 +36,12 @@ private:
 	void store(Quad::reg_t reg);
 	void load(Quad::reg_t reg);
 	bool isVar(Quad::reg_t reg) const;
-
+	
+	// Helper fonctions pour spill
+	Quad::reg_t chooseSpill();
+	void touch(Quad::reg_t reg);
+	
+	list<Quad::reg_t> _lru; // Least Recently Used registers, utilisé pour le choix de spill.
 	map<Quad::reg_t, Quad::reg_t> _map;
 	list<Quad::reg_t> _written;
 	list<Quad::reg_t> _avail;

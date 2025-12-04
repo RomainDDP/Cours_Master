@@ -1,5 +1,6 @@
 #include <cassert>
 #include <vector>
+#include <algorithm>
 using namespace std;
 #include "RegAlloc.hpp"
 
@@ -128,12 +129,18 @@ void RegAlloc::process(Inst inst) {
  */
 void RegAlloc::complete() {
     // Sauvegarder toutes les variables IOML modifiées dans ce BB
-    for (auto vreg : _written) {
-        store(vreg);
-    }
+    for (auto r : _written)
+        if (isVar(r))
+            store(r);
+
     _written.clear();
 }
 
+/* Touch un registre dans la liste des LRU (le met à la fin). */
+void RegAlloc::touch(Quad::reg_t reg) {
+    _lru.remove(reg);
+    _lru.push_back(reg);
+}
 
 /**
  * Allocate a read register.
@@ -143,21 +150,25 @@ void RegAlloc::processRead(Param& param) {
     assert("parameter should be a read parameter!" && param.type() == Param::READ);
 
     Quad::reg_t vreg = param.value();
+    bool need_load = false;
 
-    // Allouer le registre matériel si nécessaire
-    Quad::reg_t hreg = allocate(vreg);
+    if (_map.count(vreg) == 0) {
+        allocate(vreg);
+        if (isVar(vreg))
+            need_load = true;
+    }
 
-    // Si c'est une variable IOML, on charge sa valeur depuis la pile
-    if (isVar(vreg))
+    Quad::reg_t hreg = _map[vreg];
+
+    if (need_load)
         load(vreg);
 
-    // Remplacer le virtuel par le matériel dans le paramètre
     param = Param::read(hreg);
 
-    // Registres non-variables : morts après usage dans ce BB → marqués à libérer
-    if (!isVar(vreg))
-        _fried.push_back(vreg);
+    touch(vreg);
+    _fried.push_back(vreg);
 }
+
 
 
 /**
@@ -165,50 +176,86 @@ void RegAlloc::processRead(Param& param) {
  * @param param		Parameter to fix.
  */
 void RegAlloc::processWrite(Param& param) {
-    assert("parameter should be a write parameter!" && param.type() == Param::WRITE);
-
     Quad::reg_t vreg = param.value();
 
-    // Allouer le registre matériel si nécessaire
-    Quad::reg_t hreg = allocate(vreg);
+    if (_map.count(vreg) == 0)
+        allocate(vreg);
 
-    // Remplacer dans le paramètre
+    Quad::reg_t hreg = _map[vreg];
     param = Param::write(hreg);
 
-    // Si c'est une variable IOML, on l'ajoute à la liste des registres à sauver
-    if (isVar(vreg)) {
-        // éviter les doublons
-        bool already = false;
-        for (auto r : _written)
-            if (r == vreg) { already = true; break; }
-        if (!already)
-            _written.push_back(vreg);
-    }
+    touch(vreg);
+
+    // Marqué comme écrit (doit être spilled la fin du BB)
+    _written.push_back(vreg);
+    _fried.push_back(vreg);
 }
+
 
 
 /**
  * Allocate an hardware register through the free ones or spill a register
  * to get a new free hardware register.
  */
-Quad::reg_t RegAlloc::allocate(Quad::reg_t reg) {
-    // Si déjà alloué, on renvoie le registre matériel existant
-    auto it = _map.find(reg);
-    if (it != _map.end())
-        return it->second;
+Quad::reg_t RegAlloc::allocate(Quad::reg_t vreg) {
 
-    // Plus de registre dispo → erreur
-    if (_avail.empty())
-        assert("no more registers available!" && false);
+    // Est-ce qu'il est alloué ?
+    if (_map.count(vreg))
+        return _map[vreg];
 
-    // On prend un registre matériel libre
-    Quad::reg_t hreg = _avail.front();
-    _avail.pop_front();
+    Quad::reg_t hreg;
 
-    _map[reg] = hreg;
+    // Registre physique libre.
+    if (!_avail.empty()) {
+        hreg = _avail.front();
+        _avail.pop_front();
+    }
+    else {
+        // Besoin de spill un registre.
+        Quad::reg_t victim = chooseSpill();
+        spill(victim);
+
+        // Now a register must be free
+        assert(!_avail.empty());
+        hreg = _avail.front();
+        _avail.pop_front();
+    }
+
+   	// On l'ajoute dans la map 
+    _map[vreg] = hreg;
+    touch(vreg);
+
     return hreg;
 }
 
+/*
+ * Fonction qui permet de déterminer un registre à spill.
+ * */
+
+Quad::reg_t RegAlloc::chooseSpill() {
+
+	// 1. Tente de spill une variable (global) qui n'est ni fried ni written.
+    for (auto r : _lru)
+        if (isVar(r) &&
+            std::find(_fried.begin(), _fried.end(), r) == _fried.end() &&
+            std::find(_written.begin(), _written.end(), r) == _written.end())
+            return r;
+
+	// 2. Tente de spill un tmp ni fried ni écrit.
+    for (auto r : _lru)
+        if (!isVar(r) &&
+            std::find(_fried.begin(), _fried.end(), r) == _fried.end() &&
+            std::find(_written.begin(), _written.end(), r) == _written.end())
+            return r;
+
+	// 3. Dernier cas, spill n'importe quel non-fried même si écrit.
+    for (auto r : _lru)
+        if (std::find(_fried.begin(), _fried.end(), r) == _fried.end())
+            return r;
+
+    assert(false && "No spill candidate found!");
+    return 0;
+}
 
 /**
  * Generate code to spill the given virtual register.

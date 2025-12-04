@@ -282,24 +282,91 @@ void SetStatement::gen(AutoDecl& automaton, QuadProgram& prog) const {
 
 ///
 void SetFieldStatement::gen(AutoDecl& automaton, QuadProgram& prog) const {
-	prog.comment(pos);
+    prog.comment(pos);
 
-	auto mem = MemExpr(_dec).gen(prog); 
-	auto expr = _expr->gen(prog);
-	auto low = _lo->gen(prog);
-	auto high = _hi->gen(prog);
+    // Essayer de récupérer des constantes pour hi, lo, expr
+    auto hi_c = _hi->eval();
+    auto lo_c = _lo->eval();
+    auto expr_c = _expr->eval();
 
-	auto res = prog.newReg();
+    // Cas optimisé : u == l et e constante 0 ou 1
+    if (hi_c && lo_c && expr_c && (*hi_c == *lo_c) && (*expr_c == 0 || *expr_c == 1)) {
+        value_t bit = *lo_c;
+        value_t mask = value_t(1u) << bit;
 
-	prog.emit(Quad::set(0, mem));
-	prog.emit(Quad::set(1, high));
-	prog.emit(Quad::set(2, low));
-	prog.emit(Quad::set(3, expr));
+        // Charger la valeur actuelle de i
+        auto mem = MemExpr(_dec).gen(prog); // i
 
-	prog.emit(Quad::call(field_set_call));
+        auto res = prog.newReg();
 
-	prog.emit(Quad::set(res, 0));
+        if (*expr_c == 1) {
+            // i | (1 << l)
+            auto rmask = prog.newReg();
+            prog.emit(Quad::seti(rmask, mask));
+            prog.emit(Quad::or_(res, mem, rmask));
+        } else {
+            // e == 0 → i & ~(1 << l)
+            auto rmask = prog.newReg();
+            value_t invMask = ~mask;
+            prog.emit(Quad::seti(rmask, invMask));
+            prog.emit(Quad::and_(res, mem, rmask));
+        }
+
+        // Écrire res dans la destination (variable ou registre)
+        switch(_dec->type()) {
+        case Declaration::VAR:
+            prog.emit(Quad::set(prog.regFor(static_cast<VarDecl *>(_dec)->name()), res));
+            break;
+        case Declaration::REG: {
+            auto ra = prog.newReg();
+            prog.emit(Quad::seti(ra, static_cast<RegDecl *>(_dec)->address()));
+            prog.emit(Quad::store(ra, res));
+            break;
+        }
+        default:
+            assert(false);
+        }
+
+        return;
+    }
+
+    // --- Cas général : appel à L10001 (field_set_call) ---
+
+    // i, u, l, e évalués normalement
+    auto mem  = MemExpr(_dec).gen(prog);   // i
+    auto hi   = _hi->gen(prog);            // u
+    auto lo   = _lo->gen(prog);            // l
+    auto expr = _expr->gen(prog);          // e
+
+    // v0 -> R0 = i, v1 -> R1 = u, v2 -> R2 = l, v3 -> R3 = e
+    prog.emit(Quad::set(0, mem));
+    prog.emit(Quad::set(1, hi));
+    prog.emit(Quad::set(2, lo));
+    prog.emit(Quad::set(3, expr));
+
+    prog.emit(Quad::call(field_set_call));
+
+    // Résultat dans v0
+    auto res = prog.newReg();
+    prog.emit(Quad::set(res, 0));
+
+    // Écrire le résultat dans la destination
+    switch(_dec->type()) {
+    case Declaration::VAR:
+        prog.emit(Quad::set(prog.regFor(static_cast<VarDecl *>(_dec)->name()), res));
+        break;
+    case Declaration::REG: {
+        auto ra = prog.newReg();
+        prog.emit(Quad::seti(ra, static_cast<RegDecl *>(_dec)->address()));
+        prog.emit(Quad::store(ra, res));
+        break;
+    }
+    default:
+        assert(false);
+    }
 }
+
+
 
 ///
 void GotoStatement::gen(AutoDecl& automaton, QuadProgram& prog) const {
