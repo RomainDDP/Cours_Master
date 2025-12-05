@@ -1,2 +1,3 @@
 orange file.c -o out.ffx
 owcet -s lpc2138 file.elf <function> -f file.ff(x)
+mkff file.elf >> file.ff

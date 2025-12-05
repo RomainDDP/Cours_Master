@@ -1536,45 +1536,82 @@ void doPWM(void _8)
 void stabilize()
 {
 # 540 "helico.c"
-	for(currentChannel = 0; currentChannel <= 3; currentChannel++)
+	currentChannel = 0;
+# 541 "helico.c"
+	Ainlast = Ain;
 # 542 "helico.c"
-	{
+	Ain = getValue(currentChannel);
+# 543 "helico.c"
+	doGyroChannel();
 # 544 "helico.c"
-		updateADC();
-# 546 "helico.c"
-		action();
+	action();
+# 545 "helico.c"
+	doPWM();
+# 547 "helico.c"
+	currentChannel = 1;
 # 548 "helico.c"
-		doPWM();
-	}
+	Ainlast = Ain;
+# 549 "helico.c"
+	Ain = getValue(currentChannel);
+# 550 "helico.c"
+	doAROMXChannel();
+# 551 "helico.c"
+	action();
+# 552 "helico.c"
+	doPWM();
+# 554 "helico.c"
+	currentChannel = 2;
+# 555 "helico.c"
+	Ainlast = Ain;
+# 556 "helico.c"
+	Ain = getValue(currentChannel);
+# 557 "helico.c"
+	doAROMYChannel();
+# 558 "helico.c"
+	action();
+# 559 "helico.c"
+	doPWM();
+# 561 "helico.c"
+	currentChannel = 3;
+# 562 "helico.c"
+	Ainlast = Ain;
+# 563 "helico.c"
+	Ain = getValue(currentChannel);
+# 564 "helico.c"
+	doAROMZChannel();
+# 565 "helico.c"
+	action();
+# 566 "helico.c"
+	doPWM();
 }
 
 int main(void _9)
 {
-# 560 "helico.c"
+# 576 "helico.c"
 	calibrateGyro();
-# 561 "helico.c"
+# 577 "helico.c"
 	calibrateArom();
-# 566 "helico.c"
+# 582 "helico.c"
 	sec = 0;
-# 568 "helico.c"
+# 584 "helico.c"
 	while(1)
-# 568 "helico.c"
+# 584 "helico.c"
 	{
-# 569 "helico.c"
+# 585 "helico.c"
 		ticks++;
-# 570 "helico.c"
+# 586 "helico.c"
 		marks++;
-# 571 "helico.c"
+# 587 "helico.c"
 		if(marks == 350)
-# 571 "helico.c"
+# 587 "helico.c"
 		{
-# 572 "helico.c"
+# 588 "helico.c"
 			marks = 0;
-# 573 "helico.c"
+# 589 "helico.c"
 			stabilize();
 		}
 	}
-# 576 "helico.c"
+# 592 "helico.c"
 	return 0;
 }
 

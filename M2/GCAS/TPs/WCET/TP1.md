@@ -421,12 +421,12 @@ This exercice is the follow-up of the previous exercice, concerning the autopilo
 
 5. Rewrite the helico application in order to avoid the overestimation observed in the previous question and compute the new WCET.
 
-	[=>] new WCET = around 3700 + 417 + 207 = 4324
+	[=>] new WCET = 6711 cycles
 
 6. Re-compute now the minimal processor frequency required for a processor to
 run this application. Is the LPC2138 at 8MHz is now enough?
 
-	[=>] new minimal frequency = 5Mhz
+	[=>] new minimal frequency = 7Mhz
 	
 	[=>] is LPC2138 anough: [x] yes / [] no
 
@@ -474,7 +474,7 @@ This exercise shows that, even if the control flow of a program is too complex t
 
   b. The CFG of the function `exit()` is disconnected: this comes from the last instruction of `exit()`, `SWI` that performs a system call to the OS at end of program to exit (_enable disassembly view_).
 
-	[=>] SWI address =
+	[=>] SWI address = 4e0 
 
   We have to help OTAWA to manage these issues.
 
@@ -482,7 +482,7 @@ This exercise shows that, even if the control flow of a program is too complex t
 
   a. The first command is `multicall` and represents the call to a function pointer call: you have to replace the `?` with a comma-separated list of quoted names of the functions that may be called through the pointer (look to the sources).
 
-	[=>] called functions = 
+	[=>] called functions = "zero", "one"
 
   b. The second entry concernes the `SWI` instruction of `exit()`. `mkff` proposes to consider this function as either a non-returning instruction, or a call to multiple functions. Just remove the bad line.
 
@@ -490,10 +490,10 @@ This exercise shows that, even if the control flow of a program is too complex t
 	
 	[=>] [ ] non-return function
 	
-	[=>] [ ] multi-call
+	[=>] [x] multi-call
 
 5. Re-generate the CFG with `dumpcfg` and check that the new CFG is now consistent, that is, connected without any unknown call or branch.
 
 6. Now, you can compute the WCET.
 
-	[=>] WCET =
+	[=>] WCET = 66 cycles

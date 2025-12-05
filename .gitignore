@@ -11,3 +11,4 @@ M2/CLB/TPs/repo_linux
 **.log
 **.json
 **.elf
+**/*-otawa/*
