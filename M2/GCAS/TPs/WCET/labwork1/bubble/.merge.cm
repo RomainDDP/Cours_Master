@@ -1,0 +1,58 @@
+int main(void );
+
+void _start(void )
+{
+# 4 "bubble.c"
+	main();
+# 5 "bubble.c"
+	while(1)
+# 5 "bubble.c"
+		;
+}
+
+void bubbleSort(int *array, int length)
+{
+	char __tmp_0__ = 0;
+	int i, j, temp;
+	int test;
+# 12 "bubble.c"
+	for(i = length - 1; !__tmp_0__ && i > 0; __tmp_0__ || i--)
+# 13 "bubble.c"
+	{
+# 14 "bubble.c"
+		test = 0;
+# 15 "bubble.c"
+		for(j = 0; j < i; j++)
+# 16 "bubble.c"
+		{
+# 17 "bubble.c"
+			if(array[j] > array[j + 1])
+# 18 "bubble.c"
+			{
+# 19 "bubble.c"
+				temp = array[j];
+# 20 "bubble.c"
+				array[j] = array[j + 1];
+# 21 "bubble.c"
+				array[j + 1] = temp;
+# 22 "bubble.c"
+				test = 1;
+			}
+		}
+# 25 "bubble.c"
+		if(test == 0)
+# 25 "bubble.c"
+			__tmp_0__ = 1 != 0;
+	}
+	__tmp_0__ = 0;
+}
+
+int main(void _0)
+{
+	int t[8];
+# 32 "bubble.c"
+	bubbleSort(t, 8);
+# 33 "bubble.c"
+	return 0;
+}
+

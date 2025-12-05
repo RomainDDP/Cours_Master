@@ -1,0 +1,336 @@
+#include "AST.hpp"
+#include "Quad.hpp"
+
+#include <assert.h>
+
+const Quad::lab_t
+	base_call = 10000,
+	field_get_call = 10000,	// R0=expr, R1=high bit, R2=low bit
+	field_set_call = 100001;	// R0=expr, R1=high bit, R2=low bit, R2=assigned value
+
+
+///
+Quad::reg_t ConstExpr::gen(QuadProgram& prog) {
+	auto r = prog.newReg();
+	prog.emit(Quad::seti(r, _val));
+	return r;
+}
+
+///
+Quad::reg_t MemExpr::gen(QuadProgram& prog) {
+	switch(_dec->type()) {
+
+	case Declaration::CST: {
+			auto r = prog.newReg();
+			prog.emit(Quad::seti(r, static_cast<ConstDecl *>(_dec)->value()));
+			return r;
+		}
+
+	case Declaration::VAR:
+		return prog.regFor(static_cast<VarDecl *>(_dec)->name());
+
+	case Declaration::REG: {
+		auto r = prog.newReg();
+		auto addr = prog.newReg();
+		prog.emit(Quad::seti(addr, static_cast<RegDecl *>(_dec)->address()));
+		Quad::load(r, addr);
+		return r;
+	}
+
+	default:
+		assert(false);
+		return 0;
+	}
+}
+
+
+///
+Quad::reg_t UnopExpr::gen(QuadProgram& prog) {
+	auto ro = _arg->gen(prog);
+	auto r = prog.newReg();
+	switch(_op) {
+	case NEG:
+		prog.emit(Quad::neg(r, ro));
+		break;
+	
+	default:
+		prog.emit(Quad::inv(r, ro));
+		break;
+	}
+	return r;
+}
+
+
+///
+Quad::reg_t BinopExpr::gen(QuadProgram& prog) {
+	auto r1 = _arg1->gen(prog);
+	auto r2 = _arg2->gen(prog);
+
+	auto rd = prog.newReg();
+
+	Quad q;
+
+	switch(_op) {
+		case ADD:
+			q = Quad::add(rd, r1, r2);
+			break;
+		case SUB:
+			q = Quad::sub(rd, r1, r2);
+			break;
+		case MUL:
+			q = Quad::mul(rd, r1, r2);
+			break;
+		case DIV:
+			q = Quad::div(rd, r1, r2);
+			break;
+		case MOD:
+			q = Quad::mod(rd, r1, r2);
+			break;
+		case BIT_AND:
+			q = Quad::and_(rd, r1, r2);
+			break;
+		case BIT_OR:
+			q = Quad::or_(rd, r1, r2);
+			break;
+		case XOR:
+			q = Quad::xor_(rd, r1, r2);
+			break;
+		case SHL:
+			q = Quad::shl(rd, r1, r2);
+			break;
+		case SHR:
+			q = Quad::shr(rd, r1, r2);
+			break;
+		case ROL:
+			q = Quad::rol(rd, r1, r2);
+			break;
+		case ROR:
+			q = Quad::ror(rd, r1, r2);
+			break;
+		default:
+			assert(false);
+			break;
+	}
+
+	prog.emit(q);
+	
+	return rd;
+}
+
+
+///
+Quad::reg_t BitFieldExpr::gen(QuadProgram& prog) {
+	// Make new regs for e, l and u
+	auto expr = _expr->gen(prog);
+	auto low = _lo->gen(prog);
+	auto high = _hi->gen(prog);
+
+	auto res = prog.newReg();
+
+	prog.emit(Quad::set(0, expr));
+	prog.emit(Quad::set(1, high));
+	prog.emit(Quad::set(2, low));
+
+	prog.emit(Quad::call(field_get_call));
+	
+	prog.emit(Quad::set(res, 0));
+
+	return res;
+}
+
+
+///
+void CompCond::gen(Quad::lab_t lab_true, Quad::lab_t lab_false, QuadProgram& prog) const {
+	
+	auto a1 = _arg1->gen(prog);
+	auto a2 = _arg2->gen(prog);
+	Quad q;
+	
+	switch(_comp) {
+		case EQ: 
+			q = Quad::goto_eq(lab_true, a1, a2);
+			break;
+		case NE:
+			q = Quad::goto_ne(lab_true, a1, a2);
+		case GE:
+			q = Quad::goto_ge(lab_true, a1, a2);
+			break;
+		case LE:
+			q = Quad::goto_le(lab_true, a1, a2);
+			break;
+		case GT:
+			q = Quad::goto_gt(lab_true, a1, a2);
+			break;
+		case LT:
+			q = Quad::goto_lt(lab_true, a1, a2);
+			break;
+		default:
+			assert(false);
+			break;
+	}
+	prog.emit(Quad::goto_(lab_false));
+	prog.emit(q);
+}
+
+///
+void NotCond::gen(Quad::lab_t lab_true, Quad::lab_t lab_false, QuadProgram& prog) const {
+	_cond->gen(lab_false, lab_true, prog);
+}
+
+///
+void AndCond::gen(Quad::lab_t lab_true, Quad::lab_t lab_false, QuadProgram& prog) const {
+
+	auto L1 = prog.newLab();
+
+	_cond1->gen(L1, lab_false, prog);
+	prog.emit(Quad::lab(L1));
+	_cond2->gen(lab_true, lab_false, prog);
+
+}
+
+///
+void OrCond::gen(Quad::lab_t lab_true, Quad::lab_t lab_false, QuadProgram& prog) const {
+
+	auto L1 = prog.newLab();
+
+	_cond1->gen(lab_true, L1, prog);
+	prog.emit(Quad::lab(L1));
+	_cond2->gen(lab_true, lab_false, prog);
+
+}
+
+
+///
+void NOPStatement::gen(AutoDecl& automaton, QuadProgram& prog) const {}
+
+///
+void SeqStatement::gen(AutoDecl& automaton, QuadProgram& prog) const {
+
+	prog.comment(pos);
+	_stmt1->gen(automaton, prog);
+	_stmt2->gen(automaton, prog);
+}
+
+///
+void IfStatement::gen(AutoDecl& automaton, QuadProgram& prog) const {
+	prog.comment(pos);
+
+	// Make new labels
+	auto l_true = prog.newLab();
+	auto l_false = prog.newLab();
+
+	_cond->gen(l_true, l_false, prog);
+
+}
+
+///
+void SetStatement::gen(AutoDecl& automaton, QuadProgram& prog) const {
+	prog.comment(pos);
+	auto r = _expr->gen(prog);
+	switch(_dec->type()) {
+	case Declaration::VAR:
+		prog.emit(Quad::set(prog.regFor(static_cast<VarDecl *>(_dec)->name()), r));
+		break;
+	case Declaration::REG: {
+			auto ra = prog.newReg();
+			prog.emit(Quad::seti(ra, static_cast<RegDecl *>(_dec)->address()));
+			prog.emit(Quad::store(ra, r));
+		}
+		break;
+	default:
+		assert(false);
+		break;
+	}
+}
+
+
+///
+void SetFieldStatement::gen(AutoDecl& automaton, QuadProgram& prog) const {
+	prog.comment(pos);
+
+	auto mem = MemExpr(_dec).gen(prog); 
+	auto expr = _expr->gen(prog);
+	auto low = _lo->gen(prog);
+	auto high = _hi->gen(prog);
+
+	auto res = prog.newReg();
+
+	prog.emit(Quad::set(0, mem));
+	prog.emit(Quad::set(1, high));
+	prog.emit(Quad::set(2, low));
+	prog.emit(Quad::set(3, expr));
+
+	prog.emit(Quad::call(field_set_call));
+
+	prog.emit(Quad::set(res, 0));
+}
+
+///
+void GotoStatement::gen(AutoDecl& automaton, QuadProgram& prog) const {
+	
+	prog.comment(pos);
+	prog.emit(Quad::goto_(_state->label()));
+
+}
+
+///
+void StopStatement::gen(AutoDecl& automaton, QuadProgram& prog) const {
+	prog.comment(pos);
+	prog.emit(Quad::goto_(automaton.stopLabel()));
+}
+
+
+/**
+ * Generate the code to implement a "when" directive.
+ * @param automaton		Current automaton.
+ * @param prog			Program to generate quadruplets in.
+ */
+void When::gen(AutoDecl& automaton, QuadProgram& prog) {
+	prog.comment(pos);
+	
+	//auto addr = _sig->reg()->
+
+	// Negation turned off
+	if(_neg == 0) {
+		if (_sig->bit() == 1) 
+			_action->gen(automaton, prog);
+	}
+	else { // Negation is turned on !
+		if (_sig->bit() == 0) 
+			_action->gen(automaton, prog);
+	}
+
+}
+
+
+/**
+ * Generate the code for a state.
+ * @param automaton		Current automaton.
+ * @param prog			Program to generate quadruplets in.
+ */
+void State::gen(AutoDecl& automaton, QuadProgram& prog) {
+	prog.emit(Quad::lab(_label));
+	_action->gen(automaton, prog);;
+	auto loop = prog.newLab();
+	prog.emit(Quad::lab(loop));
+	for(auto when: _whens)
+		when->gen(automaton, prog);
+	prog.emit(Quad::goto_(loop));
+}
+
+
+/**
+ * Generate the code for the automatin.
+ * @param prog	Program to generate in.
+ */
+void AutoDecl::gen(QuadProgram& prog) {
+	_stop_label = prog.newLab();
+	for(auto state: _states)
+		state->setLabel(prog.newLab());
+	_init->gen(*this, prog);
+	for(auto state: _states)
+		state->gen(*this, prog);
+	prog.emit(Quad::lab(_stop_label));
+	prog.emit(Quad::return_());
+}
+

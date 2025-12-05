@@ -1,0 +1,18 @@
+ARCH=arm-none-eabi-
+CFLAGS=-g3 -fno-stack-protector -marm
+
+# commands
+CC=$(ARCH)gcc
+LDFLAGS=-nostartfiles -static -T ../link-flash.ld
+
+# work variable
+OBJECTS=$(SOURCES:.c=.o)
+CLEAN=$(OBJECTS) $(PROGRAM).elf
+
+all: $(PROGRAM).elf
+
+$(PROGRAM).elf: $(OBJECTS)
+	$(CC) $(CFLAGS) -o $@ $(OBJECTS) $(LDFLAGS)
+
+clean:
+	rm -rf $(CLEAN)
