@@ -460,7 +460,7 @@ void doAROMZChannel(void) {
 int updateADC(void){
 
   Ainlast = Ain;
-  Ain=getValue(currentChannel);
+  Ain = getValue(currentChannel);
 
   // each case occurs every fourth time
   if(currentChannel == GYRO_CHANNEL)
@@ -470,7 +470,7 @@ int updateADC(void){
   else if(currentChannel == AROMY_CHANNEL)
   	doAROMYChannel();
 
-  // currently lloking at the Z axis accelerometer channel
+  // currently looking at the Z axis accelerometer channel
   // when going up we have less g so would be lower
   // when going down we have more g so should be over
   else if(currentChannel == AROMZ_CHANNEL)
@@ -537,17 +537,33 @@ void doPWM(void) {
 
 void stabilize() {
 
-	for(currentChannel = GYRO_CHANNEL;
-	currentChannel <= AROMZ_CHANNEL;
-	currentChannel++) {
+	currentChannel = GYRO_CHANNEL;
+	Ainlast = Ain;
+	Ain = getValue(currentChannel);
+	doGyroChannel();
+	action();
+	doPWM();
 
-		updateADC();
+	currentChannel = AROMX_CHANNEL;
+	Ainlast = Ain;
+	Ain = getValue(currentChannel);
+	doAROMXChannel();
+	action();
+	doPWM();
+	
+	currentChannel = AROMY_CHANNEL;
+	Ainlast = Ain;
+	Ain = getValue(currentChannel);
+	doAROMYChannel();
+	action();
+	doPWM();
 
-		action();
-
-		doPWM();
-
-	}
+	currentChannel = AROMZ_CHANNEL;
+	Ainlast = Ain;
+	Ain = getValue(currentChannel);
+	doAROMZChannel();
+	action();
+	doPWM();
 	
 }
 

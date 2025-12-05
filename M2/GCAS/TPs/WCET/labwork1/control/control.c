@@ -1,12 +1,11 @@
-int main();
+int main(int, char **);
 
-void _exit(int r);
+void _exit(int r) { while(1); }
 
 void _start(void) {
-	int r = main();
+	int r = main(0, 0);
 	_exit(r);
 }
-
 
 int one(void) {
 	return 1;

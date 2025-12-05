@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<flowfacts>
+    <function name="main" executed="true" extern="false">
+        <conditional id="IF-1"> <condition line="23" source="control.c" executed="true"> </condition>
+            <case cond="1" executed="true" line="24" source="control.c">
+                <call name="_exit" numcall="3" line="24" source="control.c" executed="true" extern="false">
+                    <function name="_exit">
+                        <loop loopId="1" line="3" source="control.c" exact="false" maxcount="NOCOMP" totalcount="NOCOMP">
+                        </loop>
+                    </function>
+                </call>
+            </case>
+            <case cond="0" executed="true" >
+            </case>
+        </conditional>
+        <loop source="control.c" line="3" max="NOCOMP"  min="NOCOMP">
+        </loop>
+    </function>
+</flowfacts>
+

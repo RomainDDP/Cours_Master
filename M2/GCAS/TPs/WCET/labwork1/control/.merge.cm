@@ -1,0 +1,51 @@
+int main(int , char **);
+
+void _exit(int r)
+{
+# 3 "control.c"
+	while(1)
+# 3 "control.c"
+		;
+}
+
+void _start(void )
+{
+	int r_0 = main(0, 0);
+# 7 "control.c"
+	_exit(r_0);
+}
+
+int one(void _0)
+{
+# 11 "control.c"
+	return 1;
+}
+
+int zero(void _1)
+{
+# 15 "control.c"
+	return 0;
+}
+
+int main(int argc, char **argv)
+{
+	int r_1;
+	int (*f)(void );
+# 23 "control.c"
+	if(argc == 0)
+# 24 "control.c"
+		_exit(1);
+# 27 "control.c"
+	if(argc <= 1)
+# 28 "control.c"
+		f = one;
+	else
+# 29 "control.c"
+# 30 "control.c"
+		f = zero;
+# 31 "control.c"
+	r_1 = f();
+# 32 "control.c"
+	return r_1;
+}
+

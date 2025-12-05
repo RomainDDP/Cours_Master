@@ -205,9 +205,7 @@ block (A) executed once more than block (B)?
 	[=>] Why A is executed once more than (B)?
 	
 	[<<]
-	    It's executed once more because of the loop exit. When the loop bound 
-        is reached it will still execute once more the condition to verify it
-        and then exit the loop.
+	    It's executed once more because of the loop exit. When the loop bound is reached it will still execute once more the condition to verify it and then exit the loop.
 	[>>]
 
 6. In the CFG view, the `main` function contains 2 calls to `icrc`. If you click on the two calling blocks, you get two different CFG. Observe the CFG call path at the top just above the left view, one is called from line 131 and the other one from line 134.
@@ -225,7 +223,7 @@ block (A) executed once more than block (B)?
 8. As loop bounds are sometimes tricky to obtain, we use now the tool _oRange_ to compute the WCET for us. Type the command:
 
 	```
-	$ orange crc . c main -o crc . ffx
+	$ orange crc.c main -o crc.ffx
 	```
 9. This creates a file in XML named `crc.ffx`. Open it with your preferred text editor and observe how the loop bounds are provided, taking into account the subprogram call chains leading to a particular loop. What are now the bound(s) of the loop at `crc.c:93`?
 
@@ -293,8 +291,7 @@ of the loop at line 15 in `bubble.c` (taking into account the value of the paren
 
 	[<<]
        Because what I gave is number of execution, not the loop bound...
-       The correct bound is 7. With the correct bound given, it reaches an 
-       execution count of 64 instead of 232.
+       The correct bound is 7. With the correct bound given, it reaches an execution count of 64 instead of 232.
 	[>>]
 
 8. To fix the problem, change the loop bound in `bubble.ff` to add, after `max` _N_, the syntax `total` _M_ with _M_ being the total execution count of the loop computed in the previous question.
@@ -356,13 +353,13 @@ Function `stabilize()` is the main content of the endless loop implented in main
 
 7. Considering that the management code of the loop of `stabilize()` counts less than 50 cycles: what is the total execution time of `stabilize()`?
 
-	[=>] total execution time of `stablize()` = max 200 cycles
+	[=>] total execution time of `stablize()` = 3691 * 4 = 14 764 cycles
 
 8. How many cycles are available for one iteration of the stabilize function with an LPC2138 at a frequency of 8 MHz (i.e. cycles for a period of 1ms) ? From the WCET computed just above for stabilize, is it enough to use an LPC2138 to run `helico` code? Computes the smallest possible processor frequency to execute in time the function stabilize.
 
 	[=>] 1ms on the LPC2138 = 8000Mhz / 1000 = 8000 cycles
-	[=>] is LPC2138 powerful enough to run `helico`: [x] yes / [ ] no
-	[=>] smallest possible frequency for LPC2138 : 200KHz
+	[=>] is LPC2138 powerful enough to run `helico`: [] yes / [x] no
+	[=>] smallest possible frequency for LPC2138 : 15Mhz
 
 
 
@@ -377,62 +374,61 @@ This exercice is the follow-up of the previous exercice, concerning the autopilo
 
 1. Considering that the main endless loop has a period of 1ms, look inside the function `doPMW()` to find what is the real period of function `updatePWM()` that performs the real work of `doPWM()`.
 
-	[=>] real period =
+	[=>] real period = 10ms
 
 2. Compute the WCET of the following functions using flow fact files computed by _oRange_:
   * `doAROMXChannel()`
   
-	[=>] WCET =
+	[=>] WCET = 266 cycles
   
   * `doAROMYChannel()`
 	
-	[=>] WCET =
+	[=>] WCET = 244 cycles
   
   * `doAROMZChannel()`
 	
-	[=>] WCET =
+	[=>] WCET = 241 cycles
   
   * `doGyroChannel()`
 	
-	[=>] WCET =
+	[=>] WCET = 2949 cycles
 
 	What do you observe about these WCETs?
 	
-	[=>]
+	[=>] doGyroChannel is doing a lot more work.
 	
 	[<<]
-
+        doGyroChannel is the one that constrains the more our WCET, if there is a need to improve the WCET it would best to focus on doGyroChannel as the doAROMChannels functions already have a short WCET and might not be optimized further.
 	[>>]
 
 	
 3. Taking into account (a) that `stabilize()` loop performs four calls to `updateADC()` with the four possible values for `currentChannel` and (b) that in function `updateADC()`, only one of the functions above is called at each call, could you improve the WCET of `updateADC()` over the four calls ?
 
-	[=>]
+	[=>] Yes, by improving doGyroChannel()
 	
 	[<<]
-
-	[>>]
+        DoGyroChannel() is the one doing most of the work in updateADC; and it is situated in conditional branches, and doGyroChannel while in fact being executed only once over the 4 calls, will always be considered to be the path taken for the WCET. 
+    [>>]
 
 4. Using the previous `updateADC()` approximation, compute the approximated total WCET for one call of `stabilize()`? Is there a difference with the WCET of the previous exercise?
 
-	[=>] approximated WCET =
-	
-	[=>] difference
+	[=>] approximated total WCET = 3700 
+	[=>] The approximated total WCET estimated is only valid for ONE call.  
 	
 	[<<]
-
+        It seems the WCET was greatly overestimated, this WCET is only valid for one call: when it's doGyroChannel() that is being called.
 	[>>]
 
 5. Rewrite the helico application in order to avoid the overestimation observed in the previous question and compute the new WCET.
 
-	[=>] new WCET =
+	[=>] new WCET = around 3700 + 417 + 207 = 4324
 
 6. Re-compute now the minimal processor frequency required for a processor to
 run this application. Is the LPC2138 at 8MHz is now enough?
 
-	[=>] new minimal frequency =
+	[=>] new minimal frequency = 5Mhz
 	
-	[=>] is LPC2138 anough: [ ] yes / [ ] no
+	[=>] is LPC2138 anough: [x] yes / [] no
 
 7. Deposit on Moodle’s repository your new version of `helico.c`.
 
@@ -460,20 +456,20 @@ This exercise shows that, even if the control flow of a program is too complex t
 3. To understand what happens, it is useful to look to the CFG of the application produced by the command:
 
 	```
-	$ dumpcfg - Wds control.elf
+	$ dumpcfg -Wds control.elf
 	```
 	
 	And then explore it with `obviews.py`:
 
 	```
-	$ obviews . py control.elf
+	$ obviews.py control.elf
 	```
 	
   You have to remark two things:
 
   a. The call of the function pointer at line 32 has not been resolved by **OTAWA**.
 
-  [=>] BB address containing this call =
+  [=>] BB address containing this call = 4b8:12
 
 
   b. The CFG of the function `exit()` is disconnected: this comes from the last instruction of `exit()`, `SWI` that performs a system call to the OS at end of program to exit (_enable disassembly view_).
