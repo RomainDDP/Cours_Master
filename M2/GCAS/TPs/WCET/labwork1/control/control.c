@@ -1,11 +1,12 @@
-int main(int, char **);
+int main(int argc, char **argv);
 
-void _exit(int r) { while(1); }
+void _exit(int r);
 
 void _start(void) {
 	int r = main(0, 0);
 	_exit(r);
 }
+
 
 int one(void) {
 	return 1;
@@ -31,3 +32,8 @@ int main(int argc, char **argv) {
 	r = f();
 	return r;
 }
+
+void _exit(int r) {
+	__asm("SWI 123");
+}
+
