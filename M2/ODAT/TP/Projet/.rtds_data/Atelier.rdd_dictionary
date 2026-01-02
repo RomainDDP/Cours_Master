@@ -3,62 +3,62 @@
 <!DOCTYPE DictionaryObjects SYSTEM "rtdsDictionaryObjects.dtd">
 
 <DictionaryObjects version="11340" language="none" diagramType="sys">
-<Signal id="SIG1" name="sOrdre_Depot">
+<Signal id="SIG1" name="sDepot_Ok">
+<DefiningSymbols>
+<SymbolReference symbolId="SYMB2" positions="2,21"/>
+</DefiningSymbols>
+</Signal>
+<Signal id="SIG10" name="sReady">
+<DefiningSymbols>
+<SymbolReference symbolId="SYMB2" positions="0,7"/>
+</DefiningSymbols>
+</Signal>
+<Signal id="SIG2" name="sOrdre_Depot">
 <DefiningSymbols>
 <SymbolReference symbolId="SYMB2" positions="2,7"/>
 </DefiningSymbols>
 </Signal>
-<Signal id="SIG10" name="sNouvelle_Piece">
+<Signal id="SIG3" name="sOrdre_Retrait">
+<DefiningSymbols>
+<SymbolReference symbolId="SYMB2" positions="2,32"/>
+</DefiningSymbols>
+</Signal>
+<Signal id="SIG4" name="sNouvelle_Piece">
 <SignalParameterType>Code</SignalParameterType>
 <SignalParameterTypeId typeItemId="ITEM2"/>
 <DefiningSymbols>
 <SymbolReference symbolId="SYMB2" positions="1,7"/>
 </DefiningSymbols>
 </Signal>
-<Signal id="SIG2" name="sPiece_terminee">
-<SignalParameterType>Code</SignalParameterType>
-<SignalParameterTypeId typeItemId="ITEM2"/>
+<Signal id="SIG5" name="sRetrait_Ok">
 <DefiningSymbols>
-<SymbolReference symbolId="SYMB2" positions="1,30"/>
+<SymbolReference symbolId="SYMB2" positions="2,48"/>
 </DefiningSymbols>
 </Signal>
-<Signal id="SIG3" name="sFin_Preparation">
-<SignalParameterType>Code</SignalParameterType>
-<SignalParameterTypeId typeItemId="ITEM2"/>
-<DefiningSymbols>
-<SymbolReference symbolId="SYMB2" positions="3,24"/>
-</DefiningSymbols>
-</Signal>
-<Signal id="SIG4" name="sReady">
-<DefiningSymbols>
-<SymbolReference symbolId="SYMB2" positions="0,7"/>
-</DefiningSymbols>
-</Signal>
-<Signal id="SIG5" name="sPreparer">
+<Signal id="SIG6" name="sPreparer">
 <SignalParameterType>Code</SignalParameterType>
 <SignalParameterTypeId typeItemId="ITEM2"/>
 <DefiningSymbols>
 <SymbolReference symbolId="SYMB2" positions="3,7"/>
 </DefiningSymbols>
 </Signal>
-<Signal id="SIG6" name="sDepot_Convoyeur">
+<Signal id="SIG7" name="sFin_Preparation">
+<SignalParameterType>Code</SignalParameterType>
+<SignalParameterTypeId typeItemId="ITEM2"/>
+<DefiningSymbols>
+<SymbolReference symbolId="SYMB2" positions="3,24"/>
+</DefiningSymbols>
+</Signal>
+<Signal id="SIG8" name="sDepot_Convoyeur">
 <DefiningSymbols>
 <SymbolReference symbolId="SYMB2" positions="4,7"/>
 </DefiningSymbols>
 </Signal>
-<Signal id="SIG7" name="sRetrait_Ok">
+<Signal id="SIG9" name="sPiece_terminee">
+<SignalParameterType>Code</SignalParameterType>
+<SignalParameterTypeId typeItemId="ITEM2"/>
 <DefiningSymbols>
-<SymbolReference symbolId="SYMB2" positions="2,48"/>
-</DefiningSymbols>
-</Signal>
-<Signal id="SIG8" name="sOrdre_Retrait">
-<DefiningSymbols>
-<SymbolReference symbolId="SYMB2" positions="2,32"/>
-</DefiningSymbols>
-</Signal>
-<Signal id="SIG9" name="sDepot_Ok">
-<DefiningSymbols>
-<SymbolReference symbolId="SYMB2" positions="2,21"/>
+<SymbolReference symbolId="SYMB2" positions="1,30"/>
 </DefiningSymbols>
 </Signal>
 <Item id="ITEM1" type="system" name="Atelier" scope="current" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
@@ -70,7 +70,5 @@
 <UsingSymbols>
 <SymbolReference symbolId="SYMB2"/>
 </UsingSymbols>
-</Item>
-<Item id="ITEM3" type="type" name="Integer" scope="global" defined="FALSE" anchorItemId="ITEM1" searchPolicy="-1" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
 </Item>
 </DictionaryObjects>
