@@ -3,9 +3,75 @@
 <!DOCTYPE DictionaryObjects SYSTEM "rtdsDictionaryObjects.dtd">
 
 <DictionaryObjects version="11340" language="none" diagramType="blk">
+<Signal id="SIG1" name="NewPiece">
+</Signal>
+<Signal id="SIG2" name="Sensor_PlaceDone">
+</Signal>
+<Signal id="SIG3" name="Sensor_RemoveDone">
+</Signal>
+<Signal id="SIG4" name="Sensor_MachineDropDone">
+</Signal>
+<Signal id="SIG5" name="Sensor_MachinePickDone">
+</Signal>
 <Item id="ITEM1" type="block" name="B_NET" scope="current" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
 <UsingSymbols>
 <SymbolReference symbolId="SYMB1"/>
 </UsingSymbols>
+<SignalWindow id="SIGWDW4" insideDiagram="TRUE">
+<ConnectorReference linkId="LINK12" isFrom="FALSE"/>
+<Connections>
+<Connection name="C_NET_CELL"/>
+</Connections>
+<ReceivedSignals>
+<SignalReference id="SIG1"/>
+<SignalReference id="SIG2"/>
+<SignalReference id="SIG3"/>
+<SignalReference id="SIG4"/>
+<SignalReference id="SIG5"/>
+</ReceivedSignals>
+</SignalWindow>
+<SignalWindow id="SIGWDW3" insideDiagram="TRUE">
+<ConnectorReference linkId="LINK13" isFrom="TRUE"/>
+<Connections>
+<Connection name="C_ENV_NET"/>
+</Connections>
+<SentSignals>
+<SignalReference id="SIG1"/>
+<SignalReference id="SIG2"/>
+<SignalReference id="SIG3"/>
+<SignalReference id="SIG4"/>
+<SignalReference id="SIG5"/>
+</SentSignals>
+</SignalWindow>
+<Channel name="C_IN" fromSignalWindow="SIGWDW3" toSignalWindow="SIGWDW1"/>
+<Channel name="C_OUT" fromSignalWindow="SIGWDW2" toSignalWindow="SIGWDW4"/>
+</Item>
+<Item id="ITEM2" type="process" name="GATEWAY" parentId="ITEM1" scope="none" minInstances="1" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
+<DefiningSymbols>
+<SymbolReference symbolId="SYMB3"/>
+</DefiningSymbols>
+<UsingSymbols>
+<SymbolReference symbolId="SYMB3"/>
+</UsingSymbols>
+<SignalWindow id="SIGWDW1" insideDiagram="FALSE">
+<ConnectorReference linkId="LINK13" isFrom="FALSE"/>
+<ReceivedSignals>
+<SignalReference id="SIG1"/>
+<SignalReference id="SIG2"/>
+<SignalReference id="SIG3"/>
+<SignalReference id="SIG4"/>
+<SignalReference id="SIG5"/>
+</ReceivedSignals>
+</SignalWindow>
+<SignalWindow id="SIGWDW2" insideDiagram="FALSE">
+<ConnectorReference linkId="LINK12" isFrom="TRUE"/>
+<SentSignals>
+<SignalReference id="SIG1"/>
+<SignalReference id="SIG2"/>
+<SignalReference id="SIG3"/>
+<SignalReference id="SIG4"/>
+<SignalReference id="SIG5"/>
+</SentSignals>
+</SignalWindow>
 </Item>
 </DictionaryObjects>

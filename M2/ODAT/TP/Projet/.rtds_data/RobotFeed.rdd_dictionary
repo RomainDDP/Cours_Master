@@ -21,7 +21,7 @@
 </Signal>
 <Signal id="SIG4" name="Ack_PlaceDone">
 <UsingSymbols>
-<SymbolReference symbolId="SYM16" usingKind="output"/>
+<SymbolReference symbolId="SYM21" usingKind="output"/>
 </UsingSymbols>
 </Signal>
 <Item id="ITEM1" type="process" name="RobotFeed" scope="current" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
@@ -36,64 +36,49 @@
 </ReceivedSignals>
 </Body>
 </Item>
-<Item id="ITEM10" type="state" name="PLACING" parentId="ITEM1" scope="none" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
-<DefiningSymbols>
-<SymbolReference symbolId="SYM5"/>
-</DefiningSymbols>
+<Item id="ITEM2" type="variable" name="targetM" scope="global" defined="FALSE" anchorItemId="ITEM1" searchPolicy="-1" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
 <UsingSymbols>
-<SymbolReference symbolId="SYM8"/>
-<SymbolReference symbolId="SYM18"/>
+<SymbolReference symbolId="SYM7"/>
 </UsingSymbols>
 </Item>
-<Item id="ITEM2" type="variable" name="pid" scope="global" defined="FALSE" anchorItemId="ITEM1" searchPolicy="-1" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
+<Item id="ITEM3" type="variable" name="mid" scope="global" defined="FALSE" anchorItemId="ITEM1" searchPolicy="-1" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
 <UsingSymbols>
-<SymbolReference symbolId="SYM16"/>
-<SymbolReference symbolId="SYM13"/>
 <SymbolReference symbolId="SYM7"/>
 <SymbolReference symbolId="SYM6"/>
-<SymbolReference symbolId="SYM11"/>
 </UsingSymbols>
 </Item>
-<Item id="ITEM3" type="variable" name="curPid" parentId="ITEM1" scope="global" defined="FALSE" anchorItemId="ITEM1" searchPolicy="-1" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
-<UsingSymbols>
-<SymbolReference symbolId="SYM13"/>
-<SymbolReference symbolId="SYM7"/>
-</UsingSymbols>
-</Item>
-<Item id="ITEM4" type="variable" name="true" scope="global" defined="FALSE" anchorItemId="ITEM1" searchPolicy="-1" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
-<UsingSymbols>
-<SymbolReference symbolId="SYM14"/>
-</UsingSymbols>
-</Item>
-<Item id="ITEM5" type="type" name="PieceId" scope="global" defined="FALSE" anchorItemId="ITEM1" searchPolicy="-1" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
+<Item id="ITEM4" type="type" name="machineId" scope="global" defined="FALSE" anchorItemId="ITEM1" searchPolicy="-1" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
 <UsingSymbols>
 <SymbolReference symbolId="SYM1"/>
 </UsingSymbols>
 </Item>
-<Item id="ITEM6" type="variable" name="false" scope="global" defined="FALSE" anchorItemId="ITEM1" searchPolicy="-1" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
-<UsingSymbols>
-<SymbolReference symbolId="SYM15"/>
-</UsingSymbols>
-</Item>
-<Item id="ITEM7" type="variable" name="mid" scope="global" defined="FALSE" anchorItemId="ITEM1" searchPolicy="-1" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
-<UsingSymbols>
-<SymbolReference symbolId="SYM6"/>
-</UsingSymbols>
-</Item>
-<Item id="ITEM8" type="variable" name="curPid" parentId="ITEM1" scope="none" variableTypeName="PieceId" variableTypeId="ITEM5" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
+<Item id="ITEM5" type="variable" name="targetM" parentId="ITEM1" scope="none" variableTypeName="machineId" variableTypeId="ITEM4" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
 <DefiningSymbols>
-<SymbolReference symbolId="SYM1" positions="0,4"/>
+<SymbolReference symbolId="SYM1" positions="1,4"/>
 </DefiningSymbols>
 </Item>
-<Item id="ITEM9" type="state" name="IDLE" parentId="ITEM1" scope="none" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
+<Item id="ITEM6" type="variable" name="mid" parentId="ITEM1" scope="none" variableTypeName="machineId" variableTypeId="ITEM4" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
+<DefiningSymbols>
+<SymbolReference symbolId="SYM1" positions="2,4"/>
+</DefiningSymbols>
+</Item>
+<Item id="ITEM7" type="state" name="IDLE" parentId="ITEM1" scope="none" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
 <DefiningSymbols>
 <SymbolReference symbolId="SYM4"/>
 </DefiningSymbols>
 <UsingSymbols>
 <SymbolReference symbolId="SYM3"/>
-<SymbolReference symbolId="SYM17"/>
+<SymbolReference symbolId="SYM22"/>
 <SymbolReference symbolId="SYM20"/>
 <SymbolReference symbolId="SYM10"/>
+</UsingSymbols>
+</Item>
+<Item id="ITEM8" type="state" name="PLACING" parentId="ITEM1" scope="none" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
+<DefiningSymbols>
+<SymbolReference symbolId="SYM5"/>
+</DefiningSymbols>
+<UsingSymbols>
+<SymbolReference symbolId="SYM8"/>
 </UsingSymbols>
 </Item>
 </DictionaryObjects>

@@ -1,0 +1,17 @@
+## Semaphores: <name> <number>
+
+## Processes: <name> <number> <function> <min inst> <max inst> <priority>
+PROCESS	Supervisor	1	Supervisor	1	-	-
+PROCESS	RobotRemove	2	RobotRemove	1	-	-
+PROCESS	Machine1	3	Machine1	1	-	-
+PROCESS	RobotFeed	4	RobotFeed	1	-	-
+PROCESS	Machine2	5	Machine2	1	-	-
+
+## Messages: <name> <number> <parameter type>
+MESSAGE	Sensor_MachinePickDone	10	RTDS_Sensor_MachinePickDone_data
+MESSAGE	Ack_Picked	12	RTDS_Ack_Picked_data
+MESSAGE	Sensor_MachineDropDone	13	RTDS_Sensor_MachineDropDone_data
+MESSAGE	Rpt_EndMachining	17	RTDS_Rpt_EndMachining_data
+MESSAGE	Ack_Dropped	19	RTDS_Ack_Dropped_data
+MESSAGE	Cmd_Place	9	RTDS_Cmd_Place_data
+

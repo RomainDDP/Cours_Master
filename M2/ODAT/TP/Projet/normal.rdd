@@ -3,7 +3,7 @@
 <!DOCTYPE Diagram SYSTEM "rtdsDiagram.dtd">
 
 <MscDiagram message_params_visibility="full">
-<LifelineOrdering identifiers="_LIFELINE_1 _LIFELINE_2 _LIFELINE_3 _LIFELINE_0 _LIFELINE_4 _LIFELINE_5 _LIFELINE_6"/>
+<LifelineOrdering identifiers="_LIFELINE_1 _LIFELINE_2 _LIFELINE_0 _LIFELINE_5 _LIFELINE_6"/>
 <MscEventRow>
 <MscEvent lifeline_ids="_LIFELINE_1" event_type="PROCESS_START" color="-" text="ENV
 " text_size="29 -" background="-"/>
@@ -11,8 +11,6 @@
 " text_size="78 -" background="-"/>
 <MscEvent lifeline_ids="_LIFELINE_0" event_type="PROCESS_START" color="-" text="Machine2
 " text_size="64 -" background="-"/>
-<MscEvent lifeline_ids="_LIFELINE_4" event_type="PROCESS_START" color="-" text="ConvArbiter
-" text_size="85 -" background="-"/>
 <MscEvent lifeline_ids="_LIFELINE_5" event_type="PROCESS_START" color="-" text="RobotFeed
 " text_size="71 -" background="-"/>
 <MscEvent lifeline_ids="_LIFELINE_6" event_type="PROCESS_START" color="-" text="RobotRemove
@@ -20,163 +18,101 @@
 <MscEvent event_type="ABSOLUTE_TIME" color="#000000" text=""/>
 </MscEventRow>
 <MscEventRow>
-<MscEvent lifeline_ids="_LIFELINE_1" event_type="MESSAGE_SEND" color="#000000" text="NewPiece(OP2)
+<MscEvent lifeline_ids="_LIFELINE_1" event_type="MESSAGE_SEND" color="#000000" text="NewPiece
 " identifier="_LINK_5"/>
-<MscEvent lifeline_ids="_LIFELINE_2" event_type="MESSAGE_RECEIVE" color="#000000" text="NewPiece(OP2)
+<MscEvent lifeline_ids="_LIFELINE_2" event_type="MESSAGE_RECEIVE" color="#000000" text="NewPiece
 " identifier="_LINK_5"/>
 <MscEvent event_type="ABSOLUTE_TIME" color="#000000" text=""/>
 </MscEventRow>
 <MscEventRow>
-<MscEvent lifeline_ids="_LIFELINE_3 _LIFELINE_2" event_type="PROCESS_CREATION" color="#000000" identifier="_LINK_59"/>
-<MscEvent lifeline_ids="_LIFELINE_3" event_type="PROCESS_START" color="-" text="PieceCtrl_17
-" text_size="92 -" background="-"/>
+<MscEvent lifeline_ids="_LIFELINE_2" event_type="MESSAGE_SEND" color="#000000" text="Cmd_Prepare
+" identifier="_LINK_186"/>
+<MscEvent lifeline_ids="_LIFELINE_0" event_type="MESSAGE_RECEIVE" color="#000000" text="Cmd_Prepare
+" identifier="_LINK_186"/>
 <MscEvent event_type="ABSOLUTE_TIME" color="#000000" text=""/>
 </MscEventRow>
 <MscEventRow>
-<MscEvent lifeline_ids="_LIFELINE_2" event_type="MESSAGE_SEND" color="#000000" text="Init_Piece(17, M2)
-" identifier="_LINK_70"/>
-<MscEvent lifeline_ids="_LIFELINE_3" event_type="MESSAGE_RECEIVE" color="#000000" text="Init_Piece(17, M2)
-" identifier="_LINK_70"/>
+<MscEvent lifeline_ids="_LIFELINE_2" event_type="MESSAGE_SEND" color="#000000" text="Cmd_Place(M2)
+" identifier="_LINK_194"/>
+<MscEvent lifeline_ids="_LIFELINE_5" event_type="MESSAGE_RECEIVE" color="#000000" text="Cmd_Place(M2)
+" identifier="_LINK_194"/>
 <MscEvent event_type="ABSOLUTE_TIME" color="#000000" text=""/>
 </MscEventRow>
 <MscEventRow>
-<MscEvent lifeline_ids="_LIFELINE_3" event_type="MESSAGE_SEND" color="#000000" text="Cmd_prepare(17)
-" identifier="_LINK_65"/>
-<MscEvent lifeline_ids="_LIFELINE_0" event_type="MESSAGE_RECEIVE" color="#000000" text="Cmd_prepare(17)
-" identifier="_LINK_65"/>
+<MscEvent lifeline_ids="_LIFELINE_1" event_type="MESSAGE_SEND" color="#000000" text="Sensor_PlaceDone
+" identifier="_LINK_198"/>
+<MscEvent lifeline_ids="_LIFELINE_5" event_type="MESSAGE_RECEIVE" color="#000000" text="Sensor_PlaceDone
+" identifier="_LINK_198"/>
 <MscEvent event_type="ABSOLUTE_TIME" color="#000000" text=""/>
 </MscEventRow>
 <MscEventRow>
-<MscEvent lifeline_ids="_LIFELINE_3" event_type="MESSAGE_SEND" color="#000000" text="ReqConv(17, PLACE)
-" identifier="_LINK_82"/>
-<MscEvent lifeline_ids="_LIFELINE_4" event_type="MESSAGE_RECEIVE" color="#000000" text="ReqConv(17, PLACE)
-" identifier="_LINK_82"/>
+<MscEvent lifeline_ids="_LIFELINE_5" event_type="MESSAGE_SEND" color="#000000" text="Ack_PlaceDone
+" identifier="_LINK_204"/>
+<MscEvent lifeline_ids="_LIFELINE_2" event_type="MESSAGE_RECEIVE" color="#000000" text="Ack_PlaceDone
+" identifier="_LINK_204"/>
 <MscEvent event_type="ABSOLUTE_TIME" color="#000000" text=""/>
 </MscEventRow>
 <MscEventRow>
-<MscEvent lifeline_ids="_LIFELINE_4" event_type="MESSAGE_SEND" color="#000000" text="GrantConv(17)
-" identifier="_LINK_88"/>
-<MscEvent lifeline_ids="_LIFELINE_3" event_type="MESSAGE_RECEIVE" color="#000000" text="GrantConv(17)
-" identifier="_LINK_88"/>
+<MscEvent lifeline_ids="_LIFELINE_1" event_type="MESSAGE_SEND" color="#000000" text="Sensor_MachinePickDone(M2)
+" identifier="_LINK_209"/>
+<MscEvent lifeline_ids="_LIFELINE_0" event_type="MESSAGE_RECEIVE" color="#000000" text="Sensor_MachinePickDone(M2)
+" identifier="_LINK_209"/>
 <MscEvent event_type="ABSOLUTE_TIME" color="#000000" text=""/>
 </MscEventRow>
 <MscEventRow>
-<MscEvent lifeline_ids="_LIFELINE_3" event_type="MESSAGE_SEND" color="#000000" text="Cmd_Place(17, M2)
-" identifier="_LINK_94"/>
-<MscEvent lifeline_ids="_LIFELINE_5" event_type="MESSAGE_RECEIVE" color="#000000" text="Cmd_Place(17, M2)
-" identifier="_LINK_94"/>
+<MscEvent lifeline_ids="_LIFELINE_0" event_type="MESSAGE_SEND" color="#000000" text="Ack_Picked(M2)
+" identifier="_LINK_212"/>
+<MscEvent lifeline_ids="_LIFELINE_2" event_type="MESSAGE_RECEIVE" color="#000000" text="Ack_Picked(M2)
+" identifier="_LINK_212"/>
 <MscEvent event_type="ABSOLUTE_TIME" color="#000000" text=""/>
 </MscEventRow>
 <MscEventRow>
-<MscEvent lifeline_ids="_LIFELINE_1" event_type="MESSAGE_SEND" color="#000000" text="Sensor_PlaceDone(17)
-" identifier="_LINK_100"/>
-<MscEvent lifeline_ids="_LIFELINE_5" event_type="MESSAGE_RECEIVE" color="#000000" text="Sensor_PlaceDone(17)
-" identifier="_LINK_100"/>
+<MscEvent lifeline_ids="_LIFELINE_0" event_type="MESSAGE_SEND" color="#000000" text="Rpt_EndMachining(M2)
+" identifier="_LINK_219"/>
+<MscEvent lifeline_ids="_LIFELINE_2" event_type="MESSAGE_RECEIVE" color="#000000" text="Rpt_EndMachining(M2)
+" identifier="_LINK_219"/>
 <MscEvent event_type="ABSOLUTE_TIME" color="#000000" text=""/>
 </MscEventRow>
 <MscEventRow>
-<MscEvent lifeline_ids="_LIFELINE_5" event_type="MESSAGE_SEND" color="#000000" text="Ack_PlaceDone(17)
-" identifier="_LINK_103"/>
-<MscEvent lifeline_ids="_LIFELINE_3" event_type="MESSAGE_RECEIVE" color="#000000" text="Ack_PlaceDone(17)
-" identifier="_LINK_103"/>
+<MscEvent lifeline_ids="_LIFELINE_2" event_type="MESSAGE_SEND" color="#000000" text="Cmd_DropToConv
+" identifier="_LINK_223"/>
+<MscEvent lifeline_ids="_LIFELINE_0" event_type="MESSAGE_RECEIVE" color="#000000" text="Cmd_DropToConv
+" identifier="_LINK_223"/>
 <MscEvent event_type="ABSOLUTE_TIME" color="#000000" text=""/>
 </MscEventRow>
 <MscEventRow>
-<MscEvent lifeline_ids="_LIFELINE_3" event_type="MESSAGE_SEND" color="#000000" text="ReleaseConv(17)
-" identifier="_LINK_109"/>
-<MscEvent lifeline_ids="_LIFELINE_4" event_type="MESSAGE_RECEIVE" color="#000000" text="ReleaseConv(17)
-" identifier="_LINK_109"/>
+<MscEvent lifeline_ids="_LIFELINE_1" event_type="MESSAGE_SEND" color="#000000" text="Sensor_MachineDropDone(M2)
+" identifier="_LINK_226"/>
+<MscEvent lifeline_ids="_LIFELINE_0" event_type="MESSAGE_RECEIVE" color="#000000" text="Sensor_MachineDropDone(M2)
+" identifier="_LINK_226"/>
 <MscEvent event_type="ABSOLUTE_TIME" color="#000000" text=""/>
 </MscEventRow>
 <MscEventRow>
-<MscEvent lifeline_ids="_LIFELINE_1" event_type="MESSAGE_SEND" color="#000000" text="Sensor_MachinePickDone(M2, 17)
-" identifier="_LINK_117"/>
-<MscEvent lifeline_ids="_LIFELINE_3" event_type="MESSAGE_RECEIVE" color="#000000" text="Sensor_MachinePickDone(M2, 17)
-" identifier="_LINK_117"/>
+<MscEvent lifeline_ids="_LIFELINE_0" event_type="MESSAGE_SEND" color="#000000" text="Ack_Dropped(M2)
+" identifier="_LINK_230"/>
+<MscEvent lifeline_ids="_LIFELINE_2" event_type="MESSAGE_RECEIVE" color="#000000" text="Ack_Dropped(M2)
+" identifier="_LINK_230"/>
 <MscEvent event_type="ABSOLUTE_TIME" color="#000000" text=""/>
 </MscEventRow>
 <MscEventRow>
-<MscEvent lifeline_ids="_LIFELINE_0" event_type="MESSAGE_SEND" color="#000000" text="Ack_Picked(17)
-" identifier="_LINK_121"/>
-<MscEvent lifeline_ids="_LIFELINE_3" event_type="MESSAGE_RECEIVE" color="#000000" text="Ack_Picked(17)
-" identifier="_LINK_121"/>
+<MscEvent lifeline_ids="_LIFELINE_2" event_type="MESSAGE_SEND" color="#000000" text="Cmd_Remove
+" identifier="_LINK_233"/>
+<MscEvent lifeline_ids="_LIFELINE_6" event_type="MESSAGE_RECEIVE" color="#000000" text="Cmd_Remove
+" identifier="_LINK_233"/>
 <MscEvent event_type="ABSOLUTE_TIME" color="#000000" text=""/>
 </MscEventRow>
 <MscEventRow>
-<MscEvent lifeline_ids="_LIFELINE_0" event_type="MESSAGE_SEND" color="#000000" text="Rpt_EndMachining(17, OK)
-" identifier="_LINK_125"/>
-<MscEvent lifeline_ids="_LIFELINE_3" event_type="MESSAGE_RECEIVE" color="#000000" text="Rpt_EndMachining(17, OK)
-" identifier="_LINK_125"/>
+<MscEvent lifeline_ids="_LIFELINE_1" event_type="MESSAGE_SEND" color="#000000" text="Sensor_RemoveDone
+" identifier="_LINK_238"/>
+<MscEvent lifeline_ids="_LIFELINE_6" event_type="MESSAGE_RECEIVE" color="#000000" text="Sensor_RemoveDone
+" identifier="_LINK_238"/>
 <MscEvent event_type="ABSOLUTE_TIME" color="#000000" text=""/>
 </MscEventRow>
 <MscEventRow>
-<MscEvent lifeline_ids="_LIFELINE_3" event_type="MESSAGE_SEND" color="#000000" text="ReqConv(17, DROP)
-" identifier="_LINK_128"/>
-<MscEvent lifeline_ids="_LIFELINE_4" event_type="MESSAGE_RECEIVE" color="#000000" text="ReqConv(17, DROP)
-" identifier="_LINK_128"/>
-<MscEvent event_type="ABSOLUTE_TIME" color="#000000" text=""/>
-</MscEventRow>
-<MscEventRow>
-<MscEvent lifeline_ids="_LIFELINE_4" event_type="MESSAGE_SEND" color="#000000" text="GrantConv(17)
-" identifier="_LINK_137"/>
-<MscEvent lifeline_ids="_LIFELINE_3" event_type="MESSAGE_RECEIVE" color="#000000" text="GrantConv(17)
-" identifier="_LINK_137"/>
-<MscEvent event_type="ABSOLUTE_TIME" color="#000000" text=""/>
-</MscEventRow>
-<MscEventRow>
-<MscEvent lifeline_ids="_LIFELINE_3" event_type="MESSAGE_SEND" color="#000000" text="Cmd_DropToConv(17)
-" identifier="_LINK_140"/>
-<MscEvent lifeline_ids="_LIFELINE_0" event_type="MESSAGE_RECEIVE" color="#000000" text="Cmd_DropToConv(17)
-" identifier="_LINK_140"/>
-<MscEvent event_type="ABSOLUTE_TIME" color="#000000" text=""/>
-</MscEventRow>
-<MscEventRow>
-<MscEvent lifeline_ids="_LIFELINE_1" event_type="MESSAGE_SEND" color="#000000" text="Sensor_MachineDropDone(M2, 17)
-" identifier="_LINK_147"/>
-<MscEvent lifeline_ids="_LIFELINE_3" event_type="MESSAGE_RECEIVE" color="#000000" text="Sensor_MachineDropDone(M2, 17)
-" identifier="_LINK_147"/>
-<MscEvent event_type="ABSOLUTE_TIME" color="#000000" text=""/>
-</MscEventRow>
-<MscEventRow>
-<MscEvent lifeline_ids="_LIFELINE_0" event_type="MESSAGE_SEND" color="#000000" text="Ack_Dropped(17)
-" identifier="_LINK_153"/>
-<MscEvent lifeline_ids="_LIFELINE_3" event_type="MESSAGE_RECEIVE" color="#000000" text="Ack_Dropped(17)
-" identifier="_LINK_153"/>
-<MscEvent event_type="ABSOLUTE_TIME" color="#000000" text=""/>
-</MscEventRow>
-<MscEventRow>
-<MscEvent lifeline_ids="_LIFELINE_3" event_type="MESSAGE_SEND" color="#000000" text="Cmd_Remove(17)
-" identifier="_LINK_159"/>
-<MscEvent lifeline_ids="_LIFELINE_6" event_type="MESSAGE_RECEIVE" color="#000000" text="Cmd_Remove(17)
-" identifier="_LINK_159"/>
-<MscEvent event_type="ABSOLUTE_TIME" color="#000000" text=""/>
-</MscEventRow>
-<MscEventRow>
-<MscEvent lifeline_ids="_LIFELINE_1" event_type="MESSAGE_SEND" color="#000000" text="Sensor_RemoveDone(17)
-" identifier="_LINK_164"/>
-<MscEvent lifeline_ids="_LIFELINE_6" event_type="MESSAGE_RECEIVE" color="#000000" text="Sensor_RemoveDone(17)
-" identifier="_LINK_164"/>
-<MscEvent event_type="ABSOLUTE_TIME" color="#000000" text=""/>
-</MscEventRow>
-<MscEventRow>
-<MscEvent lifeline_ids="_LIFELINE_6" event_type="MESSAGE_SEND" color="#000000" text="Ack_RemoveDone(17)
-" identifier="_LINK_172"/>
-<MscEvent lifeline_ids="_LIFELINE_3" event_type="MESSAGE_RECEIVE" color="#000000" text="Ack_RemoveDone(17)
-" identifier="_LINK_172"/>
-<MscEvent event_type="ABSOLUTE_TIME" color="#000000" text=""/>
-</MscEventRow>
-<MscEventRow>
-<MscEvent lifeline_ids="_LIFELINE_3" event_type="MESSAGE_SEND" color="#000000" text="ReleaseConv(17)
-" identifier="_LINK_178"/>
-<MscEvent lifeline_ids="_LIFELINE_4" event_type="MESSAGE_RECEIVE" color="#000000" text="ReleaseConv(17)
-" identifier="_LINK_178"/>
-<MscEvent event_type="ABSOLUTE_TIME" color="#000000" text=""/>
-</MscEventRow>
-<MscEventRow>
-<MscEvent lifeline_ids="_LIFELINE_3" event_type="MESSAGE_SEND" color="#000000" text="Piece_Done(17, M2)
-" identifier="_LINK_181"/>
-<MscEvent lifeline_ids="_LIFELINE_2" event_type="MESSAGE_RECEIVE" color="#000000" text="Piece_Done(17, M2)
-" identifier="_LINK_181"/>
+<MscEvent lifeline_ids="_LIFELINE_6" event_type="MESSAGE_SEND" color="#000000" text="Ack_RemoveDone
+" identifier="_LINK_244"/>
+<MscEvent lifeline_ids="_LIFELINE_2" event_type="MESSAGE_RECEIVE" color="#000000" text="Ack_RemoveDone
+" identifier="_LINK_244"/>
 <MscEvent event_type="ABSOLUTE_TIME" color="#000000" text=""/>
 </MscEventRow>
 <MscEventRow>

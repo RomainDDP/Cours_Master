@@ -19,35 +19,21 @@
 <SymbolReference symbolId="_LIFELINE_2"/>
 </UsingSymbols>
 </Item>
-<Item id="ITEM4" type="process" name="PieceCtrl_17" scope="global" defined="FALSE" anchorItemId="ITEM1" searchPolicy="1" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
-<AlternateType type="system"/>
-<AlternateType type="block"/>
-<UsingSymbols>
-<SymbolReference symbolId="_LIFELINE_3"/>
-</UsingSymbols>
-</Item>
-<Item id="ITEM5" type="process" name="Machine2" scope="global" defined="FALSE" anchorItemId="ITEM1" searchPolicy="1" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
+<Item id="ITEM4" type="process" name="Machine2" scope="global" defined="FALSE" anchorItemId="ITEM1" searchPolicy="1" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
 <AlternateType type="system"/>
 <AlternateType type="block"/>
 <UsingSymbols>
 <SymbolReference symbolId="_LIFELINE_0"/>
 </UsingSymbols>
 </Item>
-<Item id="ITEM6" type="process" name="ConvArbiter" scope="global" defined="FALSE" anchorItemId="ITEM1" searchPolicy="1" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
-<AlternateType type="system"/>
-<AlternateType type="block"/>
-<UsingSymbols>
-<SymbolReference symbolId="_LIFELINE_4"/>
-</UsingSymbols>
-</Item>
-<Item id="ITEM7" type="process" name="RobotFeed" scope="global" defined="FALSE" anchorItemId="ITEM1" searchPolicy="1" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
+<Item id="ITEM5" type="process" name="RobotFeed" scope="global" defined="FALSE" anchorItemId="ITEM1" searchPolicy="1" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
 <AlternateType type="system"/>
 <AlternateType type="block"/>
 <UsingSymbols>
 <SymbolReference symbolId="_LIFELINE_5"/>
 </UsingSymbols>
 </Item>
-<Item id="ITEM8" type="process" name="RobotRemove" scope="global" defined="FALSE" anchorItemId="ITEM1" searchPolicy="1" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
+<Item id="ITEM6" type="process" name="RobotRemove" scope="global" defined="FALSE" anchorItemId="ITEM1" searchPolicy="1" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
 <AlternateType type="system"/>
 <AlternateType type="block"/>
 <UsingSymbols>

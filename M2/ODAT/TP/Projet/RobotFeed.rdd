@@ -4,7 +4,9 @@
 
 <SdlFSMDiagram language="sdl" type="prcs" is_extract="FALSE" is_temporary="FALSE">
 <SdlFSMPartition name="" needs_cleanup="FALSE">
-<SdlFSMSymbol identifier="SYM1" type="sdlText" text="dcl curPid PieceId;" outline_color="-" background_color="-" center_coordinates="193 66" dimensions="158 40" attached_symbol_id=""/>
+<SdlFSMSymbol identifier="SYM1" type="sdlText" text="/* Inutile actuellement, p-ê utilisée plus tard...*/
+DCL targetM machineId;
+DCL mid MachineId;" outline_color="-" background_color="-" center_coordinates="315 84" dimensions="390 70" attached_symbol_id=""/>
 <NonStateTransition top_left_coordinates="108 184">
 <SdlFSMSymbol identifier="SYM2" type="sdlStart" outline_color="-" background_color="-" center_coordinates="138 199" dimensions="60 30" attached_symbol_id=""/>
 <Transition>
@@ -12,48 +14,34 @@
 </Transition>
 </NonStateTransition>
 <StateTransitionBlock top_left_coordinates="339 185">
-<SdlFSMSymbol identifier="SYM4" type="sdlState" text="IDLE" outline_color="-" background_color="-" center_coordinates="415 205" dimensions="60 40" attached_symbol_id=""/>
+<SdlFSMSymbol identifier="SYM4" type="sdlState" text="IDLE" outline_color="-" background_color="-" center_coordinates="401 205" dimensions="60 40" attached_symbol_id=""/>
 <NormalStateTransition>
-<SdlFSMSymbol identifier="SYM6" type="sdlInputSig" text="Cmd_Place(pid, mid)" outline_color="-" background_color="-" center_coordinates="415 257" dimensions="152 40" attached_symbol_id=""/>
+<SdlFSMSymbol identifier="SYM6" type="sdlInputSig" text="Cmd_Place(mid)" outline_color="-" background_color="-" center_coordinates="401 257" dimensions="118 40" attached_symbol_id=""/>
 <Transition>
-<SdlFSMSymbol identifier="SYM7" type="sdlTask" text="curPid := pid;" outline_color="-" background_color="-" center_coordinates="415 309" dimensions="118 40" attached_symbol_id=""/>
-<SdlFSMSymbol identifier="SYM8" type="sdlState" text="PLACING" outline_color="-" background_color="-" center_coordinates="415 361" dimensions="68 40" attached_symbol_id=""/>
+<SdlFSMSymbol identifier="SYM7" type="sdlTask" text="targetM := mid;" outline_color="-" background_color="-" center_coordinates="401 309" dimensions="124 40" attached_symbol_id=""/>
+<SdlFSMSymbol identifier="SYM8" type="sdlState" text="PLACING" outline_color="-" background_color="-" center_coordinates="401 361" dimensions="68 40" attached_symbol_id=""/>
 </Transition>
 </NormalStateTransition>
 <NormalStateTransition>
-<SdlFSMSymbol identifier="SYM9" type="sdlInputSig" text="Cmd_StopAll" outline_color="-" background_color="-" center_coordinates="549 257" dimensions="96 40" attached_symbol_id=""/>
+<SdlFSMSymbol identifier="SYM9" type="sdlInputSig" text="Cmd_StopAll" outline_color="-" background_color="-" center_coordinates="521 257" dimensions="96 40" attached_symbol_id=""/>
 <Transition>
-<SdlFSMSymbol identifier="SYM10" type="sdlState" text="IDLE" outline_color="-" background_color="-" center_coordinates="549 309" dimensions="60 40" attached_symbol_id=""/>
+<SdlFSMSymbol identifier="SYM10" type="sdlState" text="IDLE" outline_color="-" background_color="-" center_coordinates="521 309" dimensions="60 40" attached_symbol_id=""/>
 </Transition>
 </NormalStateTransition>
 </StateTransitionBlock>
 <StateTransitionBlock top_left_coordinates="800 194">
-<SdlFSMSymbol identifier="SYM5" type="sdlState" text="PLACING" outline_color="-" background_color="-" center_coordinates="883 214" dimensions="68 40" attached_symbol_id=""/>
+<SdlFSMSymbol identifier="SYM5" type="sdlState" text="PLACING" outline_color="-" background_color="-" center_coordinates="904 214" dimensions="68 40" attached_symbol_id=""/>
 <NormalStateTransition>
-<SdlFSMSymbol identifier="SYM11" type="sdlInputSig" text="Sensor_PlaceDone(pid)" outline_color="-" background_color="-" center_coordinates="883 266" dimensions="166 40" attached_symbol_id=""/>
+<SdlFSMSymbol identifier="SYM11" type="sdlInputSig" text="Sensor_PlaceDone" outline_color="-" background_color="-" center_coordinates="904 266" dimensions="132 40" attached_symbol_id=""/>
 <Transition>
-<DecisionBlock>
-<SdlFSMSymbol identifier="SYM13" type="sdlDecision" text="pid = curPid" outline_color="-" background_color="-" center_coordinates="883 318" dimensions="110 40" attached_symbol_id=""/>
-<DecisionBranch>
-<SdlFSMSymbol identifier="SYM14" type="sdlAnswer" text="true" outline_color="-" background_color="-" center_coordinates="883 370" dimensions="60 40" attached_symbol_id=""/>
-<Transition>
-<SdlFSMSymbol identifier="SYM16" type="sdlSendSig" text="Ack_PlaceDone(pid)" outline_color="-" background_color="-" center_coordinates="883 422" dimensions="146 40" attached_symbol_id=""/>
-<SdlFSMSymbol identifier="SYM17" type="sdlState" text="IDLE" outline_color="-" background_color="-" center_coordinates="883 474" dimensions="60 40" attached_symbol_id=""/>
-</Transition>
-</DecisionBranch>
-<DecisionBranch>
-<SdlFSMSymbol identifier="SYM15" type="sdlAnswer" text="false" outline_color="-" background_color="-" center_coordinates="1000 370" dimensions="60 40" attached_symbol_id=""/>
-<Transition>
-<SdlFSMSymbol identifier="SYM18" type="sdlState" text="PLACING" outline_color="-" background_color="-" center_coordinates="1000 422" dimensions="68 40" attached_symbol_id=""/>
-</Transition>
-</DecisionBranch>
-</DecisionBlock>
+<SdlFSMSymbol identifier="SYM21" type="sdlSendSig" text="Ack_PlaceDone TO Supervisor" outline_color="-" background_color="-" center_coordinates="904 318" dimensions="208 40" attached_symbol_id=""/>
+<SdlFSMSymbol identifier="SYM22" type="sdlState" text="IDLE" outline_color="-" background_color="-" center_coordinates="904 370" dimensions="60 40" attached_symbol_id=""/>
 </Transition>
 </NormalStateTransition>
 <NormalStateTransition>
-<SdlFSMSymbol identifier="SYM19" type="sdlInputSig" text="Cmd_StopAll" outline_color="-" background_color="-" center_coordinates="1092 266" dimensions="96 40" attached_symbol_id=""/>
+<SdlFSMSymbol identifier="SYM19" type="sdlInputSig" text="Cmd_StopAll" outline_color="-" background_color="-" center_coordinates="1066 266" dimensions="96 40" attached_symbol_id=""/>
 <Transition>
-<SdlFSMSymbol identifier="SYM20" type="sdlState" text="IDLE" outline_color="-" background_color="-" center_coordinates="1092 318" dimensions="60 40" attached_symbol_id=""/>
+<SdlFSMSymbol identifier="SYM20" type="sdlState" text="IDLE" outline_color="-" background_color="-" center_coordinates="1066 318" dimensions="60 40" attached_symbol_id=""/>
 </Transition>
 </NormalStateTransition>
 </StateTransitionBlock>

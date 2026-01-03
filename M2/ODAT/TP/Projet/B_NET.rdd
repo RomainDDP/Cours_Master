@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE Diagram SYSTEM "rtdsDiagram.dtd">
+
+<Diagram language="sdl" type="blk" defaultColorsNeedFixing="FALSE" name="B_NET" showMsgData="full" linksCrossingAllowed="FALSE" cellWidthMm="4">
+
+<DiagramPartition name="Part. 0" nbPagesH="1" nbPagesV="1">
+<PageSpecification pageWidth="50.0" pageHeight="29.7" topMargin="0.0" bottomMargin="0.0" leftMargin="0.0" rightMargin="0.0" pageFooter="FALSE" scaleFactor="1.0"/>
+
+<Symbol symbolId="SYMB1" type="sdlBlkDgmFrm" xCenter="708" yCenter="420" fixedDimensions="TRUE" width="1373" height="775" color="-" fillColor="-">
+<Description></Description>
+<Text></Text>
+
+<Symbol symbolId="SYMB3" type="sdlPrcs" xCenter="407" yCenter="187" fixedDimensions="FALSE" width="88" height="66" color="#000000" fillColor="#C4EFED">
+<Description></Description>
+<Text>GATEWAY
+</Text>
+</Symbol>
+</Symbol>
+
+<Link linkId="LINK13" type="chnl" textSegmentNum="0" color="#000000" reverseRead="FALSE" oriented="TRUE">
+<Text>C_IN
+</Text>
+<Connector attachedSymbolId="SYMB1" type="chnlgate" isOutside="FALSE" side="n" position="-0.390386016023" endType="midarrow">
+<Text id="1">[]</Text>
+<Text id="2">C_ENV_NET
+</Text>
+</Connector>
+<Connector attachedSymbolId="SYMB3" type="chnl" isOutside="TRUE" side="x" position="0.0" endType="midarrow">
+<Text id="1">[NewPiece,
+Sensor_PlaceDone,
+Sensor_RemoveDone,
+Sensor_MachineDropDone,
+Sensor_MachinePickDone]
+</Text>
+<Text id="2"></Text>
+</Connector>
+<LinkSegment orientation="v" length="88"/>
+<LinkSegment orientation="h" length="-11"/>
+<LinkSegment orientation="v" length="99"/>
+
+</Link>
+
+<Link linkId="LINK12" type="chnl" textSegmentNum="0" color="#000000" reverseRead="FALSE" oriented="TRUE">
+<Text>C_OUT
+</Text>
+<Connector attachedSymbolId="SYMB3" type="chnl" isOutside="TRUE" side="y" position="0.0" endType="midarrow">
+<Text id="1">[]</Text>
+<Text id="2"></Text>
+</Connector>
+<Connector attachedSymbolId="SYMB1" type="chnlgate" isOutside="FALSE" side="w" position="-0.516129032258" endType="midarrow">
+<Text id="1">[NewPiece,
+Sensor_PlaceDone,
+Sensor_RemoveDone,
+Sensor_MachineDropDone,
+Sensor_MachinePickDone]
+</Text>
+<Text id="2">C_NET_CELL
+</Text>
+</Connector>
+<LinkSegment orientation="h" length="-407"/>
+
+</Link>
+</DiagramPartition>
+
+</Diagram>

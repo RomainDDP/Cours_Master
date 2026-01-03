@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE DictionaryObjects SYSTEM "rtdsDictionaryObjects.dtd">
+
+<DictionaryObjects version="11340" language="sdl" diagramType="prcs">
+<Signal id="SIG1" name="Sys_Failure">
+<UsingSymbols>
+<SymbolReference symbolId="SYM5" usingKind="output"/>
+<SymbolReference symbolId="SYM4" usingKind="input"/>
+</UsingSymbols>
+</Signal>
+<Signal id="SIG2" name="NewPiece">
+<UsingSymbols>
+<SymbolReference symbolId="SYM9" usingKind="output"/>
+<SymbolReference symbolId="SYM8" usingKind="input"/>
+</UsingSymbols>
+</Signal>
+<Signal id="SIG3" name="Sensor_PlaceDone">
+<UsingSymbols>
+<SymbolReference symbolId="SYM11" usingKind="output"/>
+<SymbolReference symbolId="SYM10" usingKind="input"/>
+</UsingSymbols>
+</Signal>
+<Signal id="SIG4" name="Sensor_RemoveDone">
+<UsingSymbols>
+<SymbolReference symbolId="SYM13" usingKind="output"/>
+<SymbolReference symbolId="SYM12" usingKind="input"/>
+</UsingSymbols>
+</Signal>
+<Signal id="SIG5" name="Sensor_MachineDropDone">
+<UsingSymbols>
+<SymbolReference symbolId="SYM16" usingKind="output"/>
+<SymbolReference symbolId="SYM18" usingKind="output"/>
+<SymbolReference symbolId="SYM14" usingKind="input"/>
+</UsingSymbols>
+</Signal>
+<Signal id="SIG6" name="Sensor_MachinePickDone">
+<UsingSymbols>
+<SymbolReference symbolId="SYM17" usingKind="output"/>
+<SymbolReference symbolId="SYM19" usingKind="output"/>
+<SymbolReference symbolId="SYM15" usingKind="input"/>
+</UsingSymbols>
+</Signal>
+<Item id="ITEM1" type="process" name="NET_GATEWAY" scope="current" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
+<Body>
+<SentSignals>
+<SignalReference id="SIG5"/>
+<SignalReference id="SIG2"/>
+<SignalReference id="SIG3"/>
+<SignalReference id="SIG4"/>
+<SignalReference id="SIG1"/>
+<SignalReference id="SIG6"/>
+</SentSignals>
+<ReceivedSignals>
+<SignalReference id="SIG5"/>
+<SignalReference id="SIG2"/>
+<SignalReference id="SIG3"/>
+<SignalReference id="SIG4"/>
+<SignalReference id="SIG1"/>
+<SignalReference id="SIG6"/>
+</ReceivedSignals>
+</Body>
+</Item>
+<Item id="ITEM2" type="state" name="IDLE" parentId="ITEM1" scope="none" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
+<DefiningSymbols>
+<SymbolReference symbolId="SYM3"/>
+</DefiningSymbols>
+<UsingSymbols>
+<SymbolReference symbolId="SYM22"/>
+<SymbolReference symbolId="SYM23"/>
+<SymbolReference symbolId="SYM20"/>
+<SymbolReference symbolId="SYM21"/>
+<SymbolReference symbolId="SYM24"/>
+<SymbolReference symbolId="SYM2"/>
+<SymbolReference symbolId="SYM7"/>
+</UsingSymbols>
+</Item>
+</DictionaryObjects>

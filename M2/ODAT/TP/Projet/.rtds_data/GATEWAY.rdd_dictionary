@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE DictionaryObjects SYSTEM "rtdsDictionaryObjects.dtd">
+
+<DictionaryObjects version="11340" language="sdl" diagramType="prcs">
+<Signal id="SIG1" name="NewPiece">
+<UsingSymbols>
+<SymbolReference symbolId="SYM6" usingKind="output"/>
+<SymbolReference symbolId="SYM5" usingKind="input"/>
+</UsingSymbols>
+</Signal>
+<Signal id="SIG2" name="Sensor_MachinePickDone">
+<UsingSymbols>
+<SymbolReference symbolId="SYM20" usingKind="output"/>
+<SymbolReference symbolId="SYM19" usingKind="output"/>
+<SymbolReference symbolId="SYM9" usingKind="input"/>
+</UsingSymbols>
+</Signal>
+<Signal id="SIG3" name="Sensor_MachineDropDone">
+<UsingSymbols>
+<SymbolReference symbolId="SYM22" usingKind="output"/>
+<SymbolReference symbolId="SYM21" usingKind="output"/>
+<SymbolReference symbolId="SYM10" usingKind="input"/>
+</UsingSymbols>
+</Signal>
+<Signal id="SIG4" name="Sensor_PlaceDone">
+<UsingSymbols>
+<SymbolReference symbolId="SYM25" usingKind="output"/>
+<SymbolReference symbolId="SYM11" usingKind="input"/>
+</UsingSymbols>
+</Signal>
+<Signal id="SIG5" name="Sensor_RemoveDone">
+<UsingSymbols>
+<SymbolReference symbolId="SYM27" usingKind="output"/>
+<SymbolReference symbolId="SYM12" usingKind="input"/>
+</UsingSymbols>
+</Signal>
+<Item id="ITEM1" type="process" name="GATEWAY" scope="current" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
+<Body>
+<SentSignals>
+<SignalReference id="SIG1"/>
+<SignalReference id="SIG2"/>
+<SignalReference id="SIG4"/>
+<SignalReference id="SIG3"/>
+<SignalReference id="SIG5"/>
+</SentSignals>
+<ReceivedSignals>
+<SignalReference id="SIG1"/>
+<SignalReference id="SIG2"/>
+<SignalReference id="SIG4"/>
+<SignalReference id="SIG3"/>
+<SignalReference id="SIG5"/>
+</ReceivedSignals>
+</Body>
+</Item>
+<Item id="ITEM10" type="state" name="ROUTING" parentId="ITEM1" scope="none" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
+<DefiningSymbols>
+<SymbolReference symbolId="SYM4"/>
+</DefiningSymbols>
+<UsingSymbols>
+<SymbolReference symbolId="SYM28"/>
+<SymbolReference symbolId="SYM29"/>
+<SymbolReference symbolId="SYM23"/>
+<SymbolReference symbolId="SYM24"/>
+<SymbolReference symbolId="SYM2"/>
+<SymbolReference symbolId="SYM7"/>
+</UsingSymbols>
+</Item>
+<Item id="ITEM2" type="variable" name="M1" scope="global" defined="FALSE" anchorItemId="ITEM1" searchPolicy="-1" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
+<UsingSymbols>
+<SymbolReference symbolId="SYM15"/>
+</UsingSymbols>
+</Item>
+<Item id="ITEM3" type="variable" name="lastM" parentId="ITEM1" scope="global" defined="FALSE" anchorItemId="ITEM1" searchPolicy="-1" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
+<UsingSymbols>
+<SymbolReference symbolId="SYM15"/>
+<SymbolReference symbolId="SYM14"/>
+</UsingSymbols>
+</Item>
+<Item id="ITEM4" type="variable" name="true" scope="global" defined="FALSE" anchorItemId="ITEM1" searchPolicy="-1" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
+<UsingSymbols>
+<SymbolReference symbolId="SYM16"/>
+</UsingSymbols>
+</Item>
+<Item id="ITEM5" type="type" name="MachineId" scope="global" defined="FALSE" anchorItemId="ITEM1" searchPolicy="-1" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
+<UsingSymbols>
+<SymbolReference symbolId="SYM8"/>
+</UsingSymbols>
+</Item>
+<Item id="ITEM6" type="variable" name="false" scope="global" defined="FALSE" anchorItemId="ITEM1" searchPolicy="-1" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
+<UsingSymbols>
+<SymbolReference symbolId="SYM17"/>
+</UsingSymbols>
+</Item>
+<Item id="ITEM7" type="variable" name="mid" parentId="ITEM1" scope="global" defined="FALSE" anchorItemId="ITEM1" searchPolicy="-1" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
+<UsingSymbols>
+<SymbolReference symbolId="SYM22"/>
+<SymbolReference symbolId="SYM20"/>
+<SymbolReference symbolId="SYM21"/>
+<SymbolReference symbolId="SYM14"/>
+<SymbolReference symbolId="SYM6"/>
+<SymbolReference symbolId="SYM5"/>
+<SymbolReference symbolId="SYM10"/>
+<SymbolReference symbolId="SYM9"/>
+<SymbolReference symbolId="SYM19"/>
+</UsingSymbols>
+</Item>
+<Item id="ITEM8" type="variable" name="lastM" parentId="ITEM1" scope="none" variableTypeName="MachineId" variableTypeId="ITEM5" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
+<DefiningSymbols>
+<SymbolReference symbolId="SYM8" positions="0,4"/>
+</DefiningSymbols>
+</Item>
+<Item id="ITEM9" type="variable" name="mid" parentId="ITEM1" scope="none" variableTypeName="MachineId" variableTypeId="ITEM5" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
+<DefiningSymbols>
+<SymbolReference symbolId="SYM8" positions="0,11"/>
+</DefiningSymbols>
+</Item>
+</DictionaryObjects>

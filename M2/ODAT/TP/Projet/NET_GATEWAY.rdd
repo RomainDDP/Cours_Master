@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE Diagram SYSTEM "rtdsDiagram.dtd">
+
+<SdlFSMDiagram language="sdl" type="prcs" is_extract="FALSE" is_temporary="FALSE">
+<SdlFSMPartition name="" needs_cleanup="FALSE">
+<NonStateTransition top_left_coordinates="52 86">
+<SdlFSMSymbol identifier="SYM1" type="sdlStart" outline_color="-" background_color="-" center_coordinates="82 101" dimensions="60 30" attached_symbol_id=""/>
+<Transition>
+<SdlFSMSymbol identifier="SYM2" type="sdlState" text="IDLE" outline_color="-" background_color="-" center_coordinates="82 148" dimensions="60 40" attached_symbol_id=""/>
+</Transition>
+</NonStateTransition>
+<StateTransitionBlock top_left_coordinates="264 97">
+<SdlFSMSymbol identifier="SYM3" type="sdlState" text="IDLE" outline_color="-" background_color="-" center_coordinates="368 117" dimensions="60 40" attached_symbol_id=""/>
+<NormalStateTransition>
+<SdlFSMSymbol identifier="SYM4" type="sdlInputSig" text="Sys_Failure" outline_color="-" background_color="-" center_coordinates="368 169" dimensions="102 40" attached_symbol_id=""/>
+<Transition>
+<SdlFSMSymbol identifier="SYM5" type="sdlSendSig" text="Sys_Failure VIA C_GATE_ENV" outline_color="-" background_color="-" center_coordinates="368 221" dimensions="208 40" attached_symbol_id=""/>
+<SdlFSMSymbol identifier="SYM7" type="sdlState" text="IDLE" outline_color="-" background_color="-" center_coordinates="368 273" dimensions="60 40" attached_symbol_id=""/>
+</Transition>
+</NormalStateTransition>
+<NormalStateTransition>
+<SdlFSMSymbol identifier="SYM8" type="sdlInputSig" text="NewPiece" outline_color="-" background_color="-" center_coordinates="582 169" dimensions="82 40" attached_symbol_id=""/>
+<Transition>
+<SdlFSMSymbol identifier="SYM9" type="sdlSendSig" text="NewPiece TO Supervisor" outline_color="-" background_color="-" center_coordinates="582 221" dimensions="180 40" attached_symbol_id=""/>
+<SdlFSMSymbol identifier="SYM20" type="sdlState" text="IDLE" outline_color="-" background_color="-" center_coordinates="582 273" dimensions="60 40" attached_symbol_id=""/>
+</Transition>
+</NormalStateTransition>
+<NormalStateTransition>
+<SdlFSMSymbol identifier="SYM10" type="sdlInputSig" text="Sensor_PlaceDone" outline_color="-" background_color="-" center_coordinates="796 169" dimensions="132 40" attached_symbol_id=""/>
+<Transition>
+<SdlFSMSymbol identifier="SYM11" type="sdlSendSig" text="Sensor_PlaceDone TO RobotFeed" outline_color="-" background_color="-" center_coordinates="796 221" dimensions="228 40" attached_symbol_id=""/>
+<SdlFSMSymbol identifier="SYM21" type="sdlState" text="IDLE" outline_color="-" background_color="-" center_coordinates="796 273" dimensions="60 40" attached_symbol_id=""/>
+</Transition>
+</NormalStateTransition>
+<NormalStateTransition>
+<SdlFSMSymbol identifier="SYM12" type="sdlInputSig" text="Sensor_RemoveDone" outline_color="-" background_color="-" center_coordinates="1045 169" dimensions="138 40" attached_symbol_id=""/>
+<Transition>
+<SdlFSMSymbol identifier="SYM13" type="sdlSendSig" text="Sensor_RemoveDone TO RobotRemove" outline_color="-" background_color="-" center_coordinates="1045 221" dimensions="244 40" attached_symbol_id=""/>
+<SdlFSMSymbol identifier="SYM22" type="sdlState" text="IDLE" outline_color="-" background_color="-" center_coordinates="1045 273" dimensions="60 40" attached_symbol_id=""/>
+</Transition>
+</NormalStateTransition>
+<NormalStateTransition>
+<SdlFSMSymbol identifier="SYM14" type="sdlInputSig" text="Sensor_MachineDropDone" outline_color="-" background_color="-" center_coordinates="1315 169" dimensions="180 40" attached_symbol_id=""/>
+<Transition>
+<SdlFSMSymbol identifier="SYM16" type="sdlSendSig" text="Sensor_MachineDropDone TO Machine1" outline_color="-" background_color="-" center_coordinates="1315 221" dimensions="264 40" attached_symbol_id=""/>
+<SdlFSMSymbol identifier="SYM18" type="sdlSendSig" text="Sensor_MachineDropDone TO Machine2" outline_color="-" background_color="-" center_coordinates="1315 273" dimensions="264 40" attached_symbol_id=""/>
+<SdlFSMSymbol identifier="SYM23" type="sdlState" text="IDLE" outline_color="-" background_color="-" center_coordinates="1315 325" dimensions="60 40" attached_symbol_id=""/>
+</Transition>
+</NormalStateTransition>
+<NormalStateTransition>
+<SdlFSMSymbol identifier="SYM15" type="sdlInputSig" text="Sensor_MachinePickDone" outline_color="-" background_color="-" center_coordinates="1598 169" dimensions="174 40" attached_symbol_id=""/>
+<Transition>
+<SdlFSMSymbol identifier="SYM17" type="sdlSendSig" text="Sensor_MachinePickDone TO Machine1" outline_color="-" background_color="-" center_coordinates="1598 221" dimensions="258 40" attached_symbol_id=""/>
+<SdlFSMSymbol identifier="SYM19" type="sdlSendSig" text="Sensor_MachinePickDone TO Machine2" outline_color="-" background_color="-" center_coordinates="1598 273" dimensions="264 40" attached_symbol_id=""/>
+<SdlFSMSymbol identifier="SYM24" type="sdlState" text="IDLE" outline_color="-" background_color="-" center_coordinates="1598 325" dimensions="60 40" attached_symbol_id=""/>
+</Transition>
+</NormalStateTransition>
+</StateTransitionBlock>
+<PageSpecification pageWidth="21.0" pageHeight="29.7" topMargin="1.0" bottomMargin="1.0" leftMargin="1.0" rightMargin="1.0" pageFooter="TRUE" scaleFactor="1.0"/>
+</SdlFSMPartition>
+</SdlFSMDiagram>
