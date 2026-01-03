@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE Diagram SYSTEM "rtdsDiagram.dtd">
+
+<SdlFSMDiagram language="sdl" type="prcs" is_extract="FALSE" is_temporary="FALSE">
+<SdlFSMPartition name="" needs_cleanup="FALSE">
+<SdlFSMSymbol identifier="SYM1" type="sdlText" text="DCL ms1, ms2, ms3 MachState;
+
+DCL pidCounter Integer;
+
+DCL pc PId;" outline_color="-" background_color="-" center_coordinates="305 98" dimensions="216 94" attached_symbol_id=""/>
+<SdlFSMSymbol identifier="SYM2" type="sdlText" text="/* FIFO declarations */
+synonym QMAX Integer = 16;
+
+newtype Q1 
+  Array(QMAX, PieceId)
+endnewtype;
+
+newtype Q2 
+  Array(QMAX, PieceId)
+endnewtype;
+
+newtype Q3 
+  Array(QMAX, PieceId)
+endnewtype;
+
+/*Head, Tail, Current*/
+DCL h1,t1,c1 Integer;
+DCL h2,t2,c2 Integer;
+DCL h3,t3,c3 Integer;" outline_color="-" background_color="-" center_coordinates="179 425" dimensions="202 304" attached_symbol_id=""/>
+<SdlFSMSymbol identifier="SYM4" type="sdlText" text="PROCEDURE Enq1(pid PieceId)
+      DECISION (c1 &lt; QMAX);
+        (true):
+          q1(t1) := p;
+          t1 := (t1 + 1) MOD QMAX;
+          c1 := c1 + 1;
+        (false):
+          /* overflow: treat as failure (or ignore) */
+          OUTPUT Sys_Failure(FEED_TIMEOUT, p, M1); /* placeholder reason */
+      ENDDECISION;
+    ENDPROCEDURE;" outline_color="-" background_color="-" center_coordinates="684 372" dimensions="550 190" attached_symbol_id=""/>
+<PageSpecification pageWidth="21.0" pageHeight="29.7" topMargin="1.0" bottomMargin="1.0" leftMargin="1.0" rightMargin="1.0" pageFooter="TRUE" scaleFactor="1.0"/>
+</SdlFSMPartition>
+</SdlFSMDiagram>

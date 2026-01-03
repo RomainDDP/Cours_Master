@@ -5,34 +5,157 @@
 <Diagram language="sdl" type="sys" defaultColorsNeedFixing="FALSE" name="Atelier" showMsgData="full" linksCrossingAllowed="FALSE" cellWidthMm="4">
 
 <DiagramPartition name="Part. 0" nbPagesH="1" nbPagesV="1">
-<PageSpecification pageWidth="21" pageHeight="29.7" topMargin="0" bottomMargin="0" leftMargin="0" rightMargin="0" pageFooter="FALSE" scaleFactor="1.0"/>
+<PageSpecification pageWidth="50.0" pageHeight="29.7" topMargin="0.0" bottomMargin="0.0" leftMargin="0.0" rightMargin="0.0" pageFooter="FALSE" scaleFactor="1.0"/>
 
-<Symbol symbolId="SYMB1" type="sdlSysDgmFrm" xCenter="297" yCenter="420" fixedDimensions="TRUE" width="551" height="775" color="-" fillColor="-">
+<Symbol symbolId="SYMB1" type="sdlSysDgmFrm" xCenter="708" yCenter="420" fixedDimensions="TRUE" width="1373" height="775" color="-" fillColor="-">
 <Description></Description>
 <Text></Text>
 
-<Symbol symbolId="SYMB2" type="sdlText" xCenter="264" yCenter="165" fixedDimensions="FALSE" width="462" height="110" color="#000000" fillColor="#FFFFFF">
+<Symbol symbolId="SYMB3" type="sdlText" xCenter="187" yCenter="330" fixedDimensions="FALSE" width="264" height="572" color="#000000" fillColor="#FFFFFF">
 <Description></Description>
-<Text>signal sReady;
-signal sNouvelle_Piece(Code), sPiece_terminee(Code);
-signal sOrdre_Depot, sDepot_Ok, sOrdre_Retrait, sRetrait_Ok;
-signal sPreparer(Code), sFin_Preparation(Code);
-signal sDepot_Convoyeur;
-</Text>
-</Symbol>
+<Text>/* Types et constantes*/
 
-<Symbol symbolId="SYMB3" type="sdlText" xCenter="198" yCenter="363" fixedDimensions="FALSE" width="264" height="154" color="#000000" fillColor="#FFFFFF">
-<Description></Description>
-<Text>/* Number of machines */
-Synonym NUM_MACHINE Integer = 3;
-
-syntype Code = Integer
-  default 1;
-  constants 1..NUM_MACHINE;
+syntype PieceId = Integer
+  constants 1:99
 endsyntype;
+
+
+NEWTYPE MachineId LITERALS
+    M1, M2, M3
+ENDNEWTYPE;
+
+NEWTYPE OpCode LITERALS
+    OP1, OP2, OP3
+ENDNEWTYPE;
+
+NEWTYPE Purpose LITERALS
+    PLACE, DROP
+ENDNEWTYPE;
+
+NEWTYPE FailReason LITERALS
+    FEED_TIMEOUT, 
+    MACHINE_PICK_TIMEOUT, 
+    REMOVE_TIMEOUT
+ENDNEWTYPE;
+
+NEWTYPE MachStatus LITERALS
+    OK
+ENDNEWTYPE;
+
+NEWTYPE MachState LITERALS
+    IDLE, 
+    BUSY, 
+    DOWN
+ENDNEWTYPE;
+
+SYNONYM NUM_MACHINES Integer = 3;</Text>
+</Symbol>
+
+<Symbol symbolId="SYMB6" type="sdlText" xCenter="616" yCenter="352" fixedDimensions="FALSE" width="572" height="616" color="#000000" fillColor="#FFFFFF">
+<Description></Description>
+<Text>/* Environnement -&gt; Superviseur */
+SIGNAL NewPiece (OpCode);
+SIGNAL InitPiece (PieceId,MachineId);
+
+/* Capteurs */
+SIGNAL Sensor_PlaceDone       (PieceId);
+SIGNAL Sensor_MachinePickDone (MachineId, PieceId);
+SIGNAL Sensor_MachineDropDone (MachineId, PieceId);
+SIGNAL Sensor_RemoveDone      (PieceId);
+
+/* Arbitrage convoyeur */
+SIGNAL ReqConv     (PieceId, Purpose);
+SIGNAL GrantConv   (PieceId);
+SIGNAL ReleaseConv (PieceId);
+
+/* Robot d’alimentation */
+SIGNAL Cmd_Place     (PieceId, MachineId);
+SIGNAL Ack_PlaceDone (PieceId);
+
+/* Machines */
+SIGNAL Cmd_Prepare      (PieceId);
+SIGNAL Ack_Picked       (PieceId);
+SIGNAL Rpt_EndMachining (PieceId, MachStatus);
+SIGNAL Cmd_DropToConv   (PieceId);
+SIGNAL Ack_Dropped      (PieceId);
+
+/* Robot de retrait */
+SIGNAL Cmd_Remove      (PieceId);
+SIGNAL Ack_RemoveDone  (PieceId);
+
+/* Supervision / sûreté */
+SIGNAL Sys_Failure      (FailReason, PieceId, MachineId);
+SIGNAL Cmd_StopAll;
+SIGNAL Warn_MachineDown (MachineId);
+
+/* Cycle de vie pièce (pour FIFO et libération machine côté Supervisor) */
+SIGNAL Piece_Done    (PieceId, MachineId);
+SIGNAL Piece_Aborted (PieceId, MachineId);
 </Text>
 </Symbol>
+
+<Symbol symbolId="SYMB7" type="sdlBlk" xCenter="1276" yCenter="121" fixedDimensions="FALSE" width="66" height="44" color="#000000" fillColor="#C4EFED">
+<Description></Description>
+<Text>B_ENV</Text>
 </Symbol>
+
+<Symbol symbolId="SYMB8" type="sdlBlk" xCenter="1276" yCenter="440" fixedDimensions="FALSE" width="66" height="44" color="#000000" fillColor="#C4EFED">
+<Description></Description>
+<Text>B_NET</Text>
+</Symbol>
+
+<Symbol symbolId="SYMB9" type="sdlBlk" xCenter="1100" yCenter="638" fixedDimensions="FALSE" width="66" height="44" color="#000000" fillColor="#C4EFED">
+<Description></Description>
+<Text>B_CELL</Text>
+</Symbol>
+</Symbol>
+
+<Link linkId="LINK9" type="chnl" textSegmentNum="0" color="#000000" reverseRead="FALSE" oriented="TRUE">
+<Text>C_ENV_NET</Text>
+<Connector attachedSymbolId="SYMB7" type="chnl" isOutside="TRUE" side="x" position="0.0" endType="midarrow">
+<Text id="1">[Warn_MachineDown]
+</Text>
+<Text id="2"></Text>
+</Connector>
+<Connector attachedSymbolId="SYMB8" type="chnl" isOutside="TRUE" side="x" position="0.0" endType="midarrow">
+<Text id="1">[NewPiece,
+Sensor_PlaceDone,
+Sensor_RemoveDone,
+Sensor_MachineDropDone,
+Sensor_MachinePickDone]
+</Text>
+<Text id="2"></Text>
+</Connector>
+<LinkSegment orientation="v" length="319"/>
+
+</Link>
+
+<Link linkId="LINK14" type="chnl" textSegmentNum="0" color="#000000" reverseRead="FALSE" oriented="TRUE">
+<Text>C_NET_CELL</Text>
+<Connector attachedSymbolId="SYMB9" type="chnl" isOutside="TRUE" side="x" position="0.0" endType="midarrow">
+<Text id="1">[NewPiece,
+Sensor_PlaceDone,
+Sensor_RemoveDone,
+Sensor_MachineDropDone,
+Sensor_MachinePickDone]
+</Text>
+<Text id="2"></Text>
+</Connector>
+<Connector attachedSymbolId="SYMB8" type="chnl" isOutside="TRUE" side="x" position="0.0" endType="midarrow">
+<Text id="1">[Warn_MachineDown,
+Cmd_StopAll]
+</Text>
+<Text id="2"></Text>
+</Connector>
+<LinkSegment orientation="v" length="-44"/>
+<LinkSegment orientation="h" length="55"/>
+<LinkSegment orientation="v" length="-66"/>
+<LinkSegment orientation="h" length="176"/>
+<LinkSegment orientation="v" length="-44"/>
+<LinkSegment orientation="h" length="-55"/>
+<LinkSegment orientation="v" length="-44"/>
+
+</Link>
 </DiagramPartition>
 
 </Diagram>

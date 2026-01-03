@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE DictionaryObjects SYSTEM "rtdsDictionaryObjects.dtd">
+
+<DictionaryObjects version="11340" language="sdl" diagramType="prcs">
+<Signal id="SIG1" name="ReqConv">
+<UsingSymbols>
+<SymbolReference symbolId="SYM5" usingKind="input"/>
+</UsingSymbols>
+</Signal>
+<Signal id="SIG2" name="GrantConv">
+<UsingSymbols>
+<SymbolReference symbolId="SYM7" usingKind="output"/>
+</UsingSymbols>
+</Signal>
+<Signal id="SIG3" name="ReleaseConv">
+<UsingSymbols>
+<SymbolReference symbolId="SYM10" usingKind="input"/>
+</UsingSymbols>
+</Signal>
+<Item id="ITEM1" type="process" name="ConvArbiter" scope="current" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
+<Body>
+<SentSignals>
+<SignalReference id="SIG2"/>
+</SentSignals>
+<ReceivedSignals>
+<SignalReference id="SIG1"/>
+<SignalReference id="SIG3"/>
+</ReceivedSignals>
+</Body>
+</Item>
+<Item id="ITEM10" type="state" name="BUSY" parentId="ITEM1" scope="none" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
+<DefiningSymbols>
+<SymbolReference symbolId="SYM9"/>
+</DefiningSymbols>
+<UsingSymbols>
+<SymbolReference symbolId="SYM15"/>
+<SymbolReference symbolId="SYM8"/>
+</UsingSymbols>
+</Item>
+<Item id="ITEM2" type="variable" name="pid" scope="global" defined="FALSE" anchorItemId="ITEM1" searchPolicy="-1" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
+<UsingSymbols>
+<SymbolReference symbolId="SYM11"/>
+<SymbolReference symbolId="SYM7"/>
+<SymbolReference symbolId="SYM6"/>
+<SymbolReference symbolId="SYM5"/>
+<SymbolReference symbolId="SYM10"/>
+</UsingSymbols>
+</Item>
+<Item id="ITEM3" type="variable" name="true" scope="global" defined="FALSE" anchorItemId="ITEM1" searchPolicy="-1" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
+<UsingSymbols>
+<SymbolReference symbolId="SYM12"/>
+</UsingSymbols>
+</Item>
+<Item id="ITEM4" type="variable" name="p" scope="global" defined="FALSE" anchorItemId="ITEM1" searchPolicy="-1" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
+<UsingSymbols>
+<SymbolReference symbolId="SYM5"/>
+</UsingSymbols>
+</Item>
+<Item id="ITEM5" type="type" name="PieceId" scope="global" defined="FALSE" anchorItemId="ITEM1" searchPolicy="-1" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
+<UsingSymbols>
+<SymbolReference symbolId="SYM4"/>
+</UsingSymbols>
+</Item>
+<Item id="ITEM6" type="variable" name="false" scope="global" defined="FALSE" anchorItemId="ITEM1" searchPolicy="-1" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
+<UsingSymbols>
+<SymbolReference symbolId="SYM13"/>
+</UsingSymbols>
+</Item>
+<Item id="ITEM7" type="variable" name="owner" parentId="ITEM1" scope="global" defined="FALSE" anchorItemId="ITEM1" searchPolicy="-1" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
+<UsingSymbols>
+<SymbolReference symbolId="SYM6"/>
+<SymbolReference symbolId="SYM11"/>
+</UsingSymbols>
+</Item>
+<Item id="ITEM8" type="variable" name="owner" parentId="ITEM1" scope="none" variableTypeName="PieceId" variableTypeId="ITEM5" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
+<DefiningSymbols>
+<SymbolReference symbolId="SYM4" positions="0,4"/>
+</DefiningSymbols>
+</Item>
+<Item id="ITEM9" type="state" name="FREE" parentId="ITEM1" scope="none" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
+<DefiningSymbols>
+<SymbolReference symbolId="SYM3"/>
+</DefiningSymbols>
+<UsingSymbols>
+<SymbolReference symbolId="SYM2"/>
+<SymbolReference symbolId="SYM14"/>
+</UsingSymbols>
+</Item>
+</DictionaryObjects>

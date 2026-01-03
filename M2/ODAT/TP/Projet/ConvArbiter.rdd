@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE Diagram SYSTEM "rtdsDiagram.dtd">
+
+<SdlFSMDiagram language="sdl" type="prcs" is_extract="FALSE" is_temporary="FALSE">
+<SdlFSMPartition name="" needs_cleanup="FALSE">
+<SdlFSMSymbol identifier="SYM4" type="sdlText" text="DCL owner PieceId;" outline_color="-" background_color="-" center_coordinates="192 68" dimensions="152 40" attached_symbol_id=""/>
+<NonStateTransition top_left_coordinates="194 161">
+<SdlFSMSymbol identifier="SYM1" type="sdlStart" outline_color="-" background_color="-" center_coordinates="224 176" dimensions="60 30" attached_symbol_id=""/>
+<Transition>
+<SdlFSMSymbol identifier="SYM2" type="sdlState" text="FREE" outline_color="-" background_color="-" center_coordinates="224 223" dimensions="60 40" attached_symbol_id=""/>
+</Transition>
+</NonStateTransition>
+<StateTransitionBlock top_left_coordinates="399 156">
+<SdlFSMSymbol identifier="SYM3" type="sdlState" text="FREE" outline_color="-" background_color="-" center_coordinates="461 176" dimensions="60 40" attached_symbol_id=""/>
+<NormalStateTransition>
+<SdlFSMSymbol identifier="SYM5" type="sdlInputSig" text="ReqConv(pid, p)" outline_color="-" background_color="-" center_coordinates="461 228" dimensions="124 40" attached_symbol_id=""/>
+<Transition>
+<SdlFSMSymbol identifier="SYM6" type="sdlTask" text="owner := pid" outline_color="-" background_color="-" center_coordinates="461 280" dimensions="104 40" attached_symbol_id=""/>
+<SdlFSMSymbol identifier="SYM7" type="sdlSendSig" text="GrantConv(pid)" outline_color="-" background_color="-" center_coordinates="461 332" dimensions="118 40" attached_symbol_id=""/>
+<SdlFSMSymbol identifier="SYM8" type="sdlState" text="BUSY" outline_color="-" background_color="-" center_coordinates="461 384" dimensions="60 40" attached_symbol_id=""/>
+</Transition>
+</NormalStateTransition>
+</StateTransitionBlock>
+<StateTransitionBlock top_left_coordinates="721 163">
+<SdlFSMSymbol identifier="SYM9" type="sdlState" text="BUSY" outline_color="-" background_color="-" center_coordinates="787 183" dimensions="60 40" attached_symbol_id=""/>
+<NormalStateTransition>
+<SdlFSMSymbol identifier="SYM10" type="sdlInputSig" text="ReleaseConv(pid)" outline_color="-" background_color="-" center_coordinates="787 235" dimensions="132 40" attached_symbol_id=""/>
+<Transition>
+<DecisionBlock>
+<SdlFSMSymbol identifier="SYM11" type="sdlDecision" text="pid = owner" outline_color="-" background_color="-" center_coordinates="787 287" dimensions="96 40" attached_symbol_id=""/>
+<DecisionBranch>
+<SdlFSMSymbol identifier="SYM12" type="sdlAnswer" text="true" outline_color="-" background_color="-" center_coordinates="787 339" dimensions="60 40" attached_symbol_id=""/>
+<Transition>
+<SdlFSMSymbol identifier="SYM14" type="sdlState" text="FREE" outline_color="-" background_color="-" center_coordinates="787 391" dimensions="60 40" attached_symbol_id=""/>
+</Transition>
+</DecisionBranch>
+<DecisionBranch>
+<SdlFSMSymbol identifier="SYM13" type="sdlAnswer" text="false" outline_color="-" background_color="-" center_coordinates="857 339" dimensions="60 40" attached_symbol_id=""/>
+<Transition>
+<SdlFSMSymbol identifier="SYM15" type="sdlState" text="BUSY" outline_color="-" background_color="-" center_coordinates="857 391" dimensions="60 40" attached_symbol_id=""/>
+</Transition>
+</DecisionBranch>
+</DecisionBlock>
+</Transition>
+</NormalStateTransition>
+</StateTransitionBlock>
+<PageSpecification pageWidth="21.0" pageHeight="29.7" topMargin="1.0" bottomMargin="1.0" leftMargin="1.0" rightMargin="1.0" pageFooter="TRUE" scaleFactor="1.0"/>
+</SdlFSMPartition>
+</SdlFSMDiagram>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE Diagram SYSTEM "rtdsDiagram.dtd">
+
+<Diagram language="sdl" type="blk" defaultColorsNeedFixing="FALSE" name="B_CELL" showMsgData="full" linksCrossingAllowed="FALSE" cellWidthMm="4">
+
+<DiagramPartition name="Part. 0" nbPagesH="1" nbPagesV="1">
+<PageSpecification pageWidth="50.0" pageHeight="50.0" topMargin="0.0" bottomMargin="0.0" leftMargin="0.0" rightMargin="0.0" pageFooter="FALSE" scaleFactor="1.0"/>
+
+<Symbol symbolId="SYMB1" type="sdlBlkDgmFrm" xCenter="708" yCenter="708" fixedDimensions="TRUE" width="1373" height="1351" color="-" fillColor="-">
+<Description></Description>
+<Text></Text>
+
+<Symbol symbolId="SYMB2" type="sdlPrcs" xCenter="473" yCenter="418" fixedDimensions="FALSE" width="110" height="44" color="#000000" fillColor="#C4EFED">
+<Description></Description>
+<Text>Supervisor</Text>
+</Symbol>
+
+<Symbol symbolId="SYMB27" type="sdlPrcs" xCenter="286" yCenter="550" fixedDimensions="FALSE" width="110" height="66" color="#000000" fillColor="#C4EFED">
+<Description></Description>
+<Text>PieceCtrl
+</Text>
+</Symbol>
+
+<Symbol symbolId="SYMB3" type="sdlPrcs" xCenter="1012" yCenter="759" fixedDimensions="FALSE" width="110" height="44" color="#000000" fillColor="#C4EFED">
+<Description></Description>
+<Text>ConvArbiter</Text>
+</Symbol>
+
+<Symbol symbolId="SYMB4" type="sdlPrcs" xCenter="913" yCenter="429" fixedDimensions="FALSE" width="110" height="44" color="#000000" fillColor="#C4EFED">
+<Description></Description>
+<Text>RobotFeed</Text>
+</Symbol>
+
+<Symbol symbolId="SYMB5" type="sdlPrcs" xCenter="165" yCenter="330" fixedDimensions="FALSE" width="110" height="44" color="#000000" fillColor="#C4EFED">
+<Description></Description>
+<Text>RobotRemove</Text>
+</Symbol>
+
+<Symbol symbolId="SYMB6" type="sdlPrcs" xCenter="627" yCenter="1067" fixedDimensions="FALSE" width="88" height="44" color="#000000" fillColor="#C4EFED">
+<Description></Description>
+<Text>Machine2</Text>
+</Symbol>
+
+<Symbol symbolId="SYMB7" type="sdlPrcs" xCenter="858" yCenter="1045" fixedDimensions="FALSE" width="88" height="44" color="#000000" fillColor="#C4EFED">
+<Description></Description>
+<Text>Machine1</Text>
+</Symbol>
+
+<Symbol symbolId="SYMB8" type="sdlPrcs" xCenter="385" yCenter="1067" fixedDimensions="FALSE" width="88" height="44" color="#000000" fillColor="#C4EFED">
+<Description></Description>
+<Text>Machine3</Text>
+</Symbol>
+
+<Symbol symbolId="SYMB9" type="sdlPrcsTypeInst" xCenter="484" yCenter="737" fixedDimensions="FALSE" width="264" height="66" color="#000000" fillColor="#C4EFED">
+<Description></Description>
+<Text>PieceCtrlInst (0,99) : PieceCtrl</Text>
+</Symbol>
+</Symbol>
+
+<Link linkId="LINK70" type="chnl" textSegmentNum="0" color="#000000" reverseRead="FALSE" oriented="TRUE">
+<Text>C_ENV_REMOVE</Text>
+<Connector attachedSymbolId="SYMB1" type="chnlgate" isOutside="FALSE" side="n" position="-0.871085214858" endType="midarrow">
+<Text id="1">[]
+</Text>
+<Text id="2">C_NET_CELL
+</Text>
+</Connector>
+<Connector attachedSymbolId="SYMB5" type="chnl" isOutside="TRUE" side="x" position="0.0" endType="midarrow">
+<Text id="1">[Sensor_RemoveDone]
+</Text>
+<Text id="2"></Text>
+</Connector>
+<LinkSegment orientation="v" length="165"/>
+<LinkSegment orientation="h" length="77"/>
+<LinkSegment orientation="v" length="165"/>
+
+</Link>
+</DiagramPartition>
+
+</Diagram>
