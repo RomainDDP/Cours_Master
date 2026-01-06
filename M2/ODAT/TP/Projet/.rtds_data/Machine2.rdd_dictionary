@@ -63,11 +63,11 @@
 </SentSignals>
 <ReceivedSignals>
 <SignalReference id="SIG2"/>
-<SignalReference id="SIG3"/>
 <SignalReference id="SIG5"/>
-<SignalReference id="SIG1"/>
 <SignalReference id="SIG7"/>
+<SignalReference id="SIG1"/>
 <SignalReference id="SIG8"/>
+<SignalReference id="SIG3"/>
 </ReceivedSignals>
 </Body>
 </Item>
@@ -160,9 +160,9 @@
 <UsingSymbols>
 <SymbolReference symbolId="SYM45"/>
 <SymbolReference symbolId="SYM14"/>
+<SymbolReference symbolId="SYM10"/>
 <SymbolReference symbolId="SYM42"/>
 <SymbolReference symbolId="SYM21"/>
-<SymbolReference symbolId="SYM10"/>
 </UsingSymbols>
 </Item>
 <Item id="ITEM8" type="variable" name="mid" scope="global" defined="FALSE" anchorItemId="ITEM1" searchPolicy="-1" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">

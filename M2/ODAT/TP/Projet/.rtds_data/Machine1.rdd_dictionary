@@ -62,12 +62,12 @@
 <SignalReference id="SIG6"/>
 </SentSignals>
 <ReceivedSignals>
-<SignalReference id="SIG7"/>
 <SignalReference id="SIG2"/>
-<SignalReference id="SIG8"/>
-<SignalReference id="SIG1"/>
 <SignalReference id="SIG3"/>
+<SignalReference id="SIG1"/>
 <SignalReference id="SIG5"/>
+<SignalReference id="SIG7"/>
+<SignalReference id="SIG8"/>
 </ReceivedSignals>
 </Body>
 </Item>
@@ -158,17 +158,17 @@
 </Item>
 <Item id="ITEM7" type="variable" name="myId" scope="global" defined="FALSE" anchorItemId="ITEM1" searchPolicy="-1" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
 <UsingSymbols>
-<SymbolReference symbolId="SYM53"/>
 <SymbolReference symbolId="SYM44"/>
+<SymbolReference symbolId="SYM53"/>
 <SymbolReference symbolId="SYM57"/>
-<SymbolReference symbolId="SYM49"/>
 <SymbolReference symbolId="SYM41"/>
+<SymbolReference symbolId="SYM49"/>
 </UsingSymbols>
 </Item>
 <Item id="ITEM8" type="variable" name="mid" scope="global" defined="FALSE" anchorItemId="ITEM1" searchPolicy="-1" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
 <UsingSymbols>
-<SymbolReference symbolId="SYM57"/>
 <SymbolReference symbolId="SYM40"/>
+<SymbolReference symbolId="SYM57"/>
 <SymbolReference symbolId="SYM41"/>
 <SymbolReference symbolId="SYM11"/>
 </UsingSymbols>
