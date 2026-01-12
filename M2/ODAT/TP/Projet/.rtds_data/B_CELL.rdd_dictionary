@@ -13,9 +13,9 @@
 </Signal>
 <Signal id="SIG13" name="Sensor_MachineDropDone">
 </Signal>
-<Signal id="SIG14" name="Sensor_PlaceDone">
+<Signal id="SIG14" name="Sensor_RemoveDone">
 </Signal>
-<Signal id="SIG15" name="Sensor_RemoveDone">
+<Signal id="SIG15" name="Sensor_PlaceDone">
 </Signal>
 <Signal id="SIG2" name="Cmd_Prepare">
 </Signal>
@@ -53,7 +53,7 @@
 <Connection name="C_NET_CELL"/>
 </Connections>
 <SentSignals>
-<SignalReference id="SIG14"/>
+<SignalReference id="SIG15"/>
 </SentSignals>
 </SignalWindow>
 <SignalWindow id="SIGWDW14" insideDiagram="TRUE">
@@ -62,7 +62,7 @@
 <Connection name="C_NET_CELL"/>
 </Connections>
 <SentSignals>
-<SignalReference id="SIG15"/>
+<SignalReference id="SIG14"/>
 </SentSignals>
 </SignalWindow>
 <SignalWindow id="SIGWDW15" insideDiagram="TRUE">
@@ -86,13 +86,13 @@
 </SignalWindow>
 <Channel name="C_ENV_SUP" fromSignalWindow="SIGWDW1" toSignalWindow="SIGWDW15"/>
 <Channel name="C_SUP_M2" fromSignalWindow="SIGWDW7" toSignalWindow="SIGWDW2"/>
-<Channel name="C_SUP_FEED" fromSignalWindow="SIGWDW11" toSignalWindow="SIGWDW3"/>
-<Channel name="C_SUP_REMOVE" fromSignalWindow="SIGWDW13" toSignalWindow="SIGWDW4"/>
-<Channel name="C_SUP_M1" fromSignalWindow="SIGWDW9" toSignalWindow="SIGWDW5"/>
+<Channel name="C_SUP_FEED" fromSignalWindow="SIGWDW13" toSignalWindow="SIGWDW3"/>
+<Channel name="C_SUP_REMOVE" fromSignalWindow="SIGWDW9" toSignalWindow="SIGWDW4"/>
+<Channel name="C_SUP_M1" fromSignalWindow="SIGWDW11" toSignalWindow="SIGWDW5"/>
 <Channel name="C_ENV_M2" fromSignalWindow="SIGWDW6" toSignalWindow="SIGWDW16"/>
-<Channel name="C_ENV_M1" fromSignalWindow="SIGWDW8" toSignalWindow="SIGWDW18"/>
-<Channel name="C_ENV_FEED" fromSignalWindow="SIGWDW10" toSignalWindow="SIGWDW17"/>
-<Channel name="C_ENV_REMOVE" fromSignalWindow="SIGWDW14" toSignalWindow="SIGWDW12"/>
+<Channel name="C_ENV_REMOVE" fromSignalWindow="SIGWDW14" toSignalWindow="SIGWDW8"/>
+<Channel name="C_ENV_M1" fromSignalWindow="SIGWDW10" toSignalWindow="SIGWDW18"/>
+<Channel name="C_ENV_FEED" fromSignalWindow="SIGWDW12" toSignalWindow="SIGWDW17"/>
 </Item>
 <Item id="ITEM2" type="process" name="Supervisor" parentId="ITEM1" scope="none" minInstances="1" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
 <DefiningSymbols>
@@ -182,21 +182,45 @@
 </ReceivedSignals>
 </SignalWindow>
 </Item>
-<Item id="ITEM4" type="process" name="Machine1" parentId="ITEM1" scope="none" minInstances="1" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
+<Item id="ITEM4" type="process" name="RobotRemove" parentId="ITEM1" scope="none" minInstances="1" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
+<DefiningSymbols>
+<SymbolReference symbolId="SYMB5"/>
+</DefiningSymbols>
+<UsingSymbols>
+<SymbolReference symbolId="SYMB5"/>
+</UsingSymbols>
+<SignalWindow id="SIGWDW8" insideDiagram="FALSE">
+<ConnectorReference linkId="LINK71" isFrom="FALSE"/>
+<ReceivedSignals>
+<SignalReference id="SIG14"/>
+</ReceivedSignals>
+</SignalWindow>
+<SignalWindow id="SIGWDW9" insideDiagram="FALSE">
+<ConnectorReference linkId="LINK103" isFrom="TRUE"/>
+<SentSignals>
+<SignalReference id="SIG11"/>
+</SentSignals>
+<ReceivedSignals>
+<SignalReference id="SIG10"/>
+<SignalReference id="SIG4"/>
+</ReceivedSignals>
+</SignalWindow>
+</Item>
+<Item id="ITEM5" type="process" name="Machine1" parentId="ITEM1" scope="none" minInstances="1" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
 <DefiningSymbols>
 <SymbolReference symbolId="SYMB7"/>
 </DefiningSymbols>
 <UsingSymbols>
 <SymbolReference symbolId="SYMB7"/>
 </UsingSymbols>
-<SignalWindow id="SIGWDW8" insideDiagram="FALSE">
+<SignalWindow id="SIGWDW10" insideDiagram="FALSE">
 <ConnectorReference linkId="LINK81" isFrom="TRUE"/>
 <ReceivedSignals>
 <SignalReference id="SIG12"/>
 <SignalReference id="SIG13"/>
 </ReceivedSignals>
 </SignalWindow>
-<SignalWindow id="SIGWDW9" insideDiagram="FALSE">
+<SignalWindow id="SIGWDW11" insideDiagram="FALSE">
 <ConnectorReference linkId="LINK102" isFrom="TRUE"/>
 <SentSignals>
 <SignalReference id="SIG5"/>
@@ -210,50 +234,26 @@
 </ReceivedSignals>
 </SignalWindow>
 </Item>
-<Item id="ITEM5" type="process" name="RobotFeed" parentId="ITEM1" scope="none" minInstances="1" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
+<Item id="ITEM6" type="process" name="RobotFeed" parentId="ITEM1" scope="none" minInstances="1" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
 <DefiningSymbols>
 <SymbolReference symbolId="SYMB4"/>
 </DefiningSymbols>
 <UsingSymbols>
 <SymbolReference symbolId="SYMB4"/>
 </UsingSymbols>
-<SignalWindow id="SIGWDW10" insideDiagram="FALSE">
+<SignalWindow id="SIGWDW12" insideDiagram="FALSE">
 <ConnectorReference linkId="LINK72" isFrom="TRUE"/>
 <ReceivedSignals>
-<SignalReference id="SIG14"/>
+<SignalReference id="SIG15"/>
 </ReceivedSignals>
 </SignalWindow>
-<SignalWindow id="SIGWDW11" insideDiagram="FALSE">
+<SignalWindow id="SIGWDW13" insideDiagram="FALSE">
 <ConnectorReference linkId="LINK100" isFrom="TRUE"/>
 <SentSignals>
 <SignalReference id="SIG9"/>
 </SentSignals>
 <ReceivedSignals>
 <SignalReference id="SIG8"/>
-<SignalReference id="SIG4"/>
-</ReceivedSignals>
-</SignalWindow>
-</Item>
-<Item id="ITEM6" type="process" name="RobotRemove" parentId="ITEM1" scope="none" minInstances="1" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
-<DefiningSymbols>
-<SymbolReference symbolId="SYMB5"/>
-</DefiningSymbols>
-<UsingSymbols>
-<SymbolReference symbolId="SYMB5"/>
-</UsingSymbols>
-<SignalWindow id="SIGWDW12" insideDiagram="FALSE">
-<ConnectorReference linkId="LINK71" isFrom="FALSE"/>
-<ReceivedSignals>
-<SignalReference id="SIG15"/>
-</ReceivedSignals>
-</SignalWindow>
-<SignalWindow id="SIGWDW13" insideDiagram="FALSE">
-<ConnectorReference linkId="LINK103" isFrom="TRUE"/>
-<SentSignals>
-<SignalReference id="SIG11"/>
-</SentSignals>
-<ReceivedSignals>
-<SignalReference id="SIG10"/>
 <SignalReference id="SIG4"/>
 </ReceivedSignals>
 </SignalWindow>

@@ -8,21 +8,23 @@
 <SymbolReference symbolId="SYMB6" positions="25,7"/>
 </DefiningSymbols>
 </Signal>
-<Signal id="SIG10" name="Sensor_PlaceDone">
+<Signal id="SIG10" name="Sensor_MachinePickDone">
+<SignalParameterType>MachineId</SignalParameterType>
+<SignalParameterTypeId typeItemId="ITEM2"/>
+<DefiningSymbols>
+<SymbolReference symbolId="SYMB6" positions="5,7"/>
+</DefiningSymbols>
+</Signal>
+<Signal id="SIG11" name="Sensor_PlaceDone">
 <DefiningSymbols>
 <SymbolReference symbolId="SYMB6" positions="4,7"/>
 </DefiningSymbols>
 </Signal>
-<Signal id="SIG11" name="Rpt_EndMachining">
+<Signal id="SIG12" name="Rpt_EndMachining">
 <SignalParameterType>MachineId</SignalParameterType>
 <SignalParameterTypeId typeItemId="ITEM2"/>
 <DefiningSymbols>
 <SymbolReference symbolId="SYMB6" positions="16,7"/>
-</DefiningSymbols>
-</Signal>
-<Signal id="SIG12" name="Cmd_Remove">
-<DefiningSymbols>
-<SymbolReference symbolId="SYMB6" positions="21,7"/>
 </DefiningSymbols>
 </Signal>
 <Signal id="SIG13" name="NewPiece">
@@ -54,23 +56,23 @@
 <SymbolReference symbolId="SYMB6" positions="14,7"/>
 </DefiningSymbols>
 </Signal>
-<Signal id="SIG4" name="Cmd_Place">
+<Signal id="SIG4" name="Sensor_RemoveDone">
+<DefiningSymbols>
+<SymbolReference symbolId="SYMB6" positions="7,7"/>
+</DefiningSymbols>
+</Signal>
+<Signal id="SIG5" name="Cmd_Place">
 <SignalParameterType>MachineId</SignalParameterType>
 <SignalParameterTypeId typeItemId="ITEM2"/>
 <DefiningSymbols>
 <SymbolReference symbolId="SYMB6" positions="10,7"/>
 </DefiningSymbols>
 </Signal>
-<Signal id="SIG5" name="Sensor_MachineDropDone">
+<Signal id="SIG6" name="Sensor_MachineDropDone">
 <SignalParameterType>MachineId</SignalParameterType>
 <SignalParameterTypeId typeItemId="ITEM2"/>
 <DefiningSymbols>
 <SymbolReference symbolId="SYMB6" positions="6,7"/>
-</DefiningSymbols>
-</Signal>
-<Signal id="SIG6" name="Sensor_RemoveDone">
-<DefiningSymbols>
-<SymbolReference symbolId="SYMB6" positions="7,7"/>
 </DefiningSymbols>
 </Signal>
 <Signal id="SIG7" name="Ack_Dropped">
@@ -80,16 +82,14 @@
 <SymbolReference symbolId="SYMB6" positions="18,7"/>
 </DefiningSymbols>
 </Signal>
-<Signal id="SIG8" name="Sensor_MachinePickDone">
-<SignalParameterType>MachineId</SignalParameterType>
-<SignalParameterTypeId typeItemId="ITEM2"/>
-<DefiningSymbols>
-<SymbolReference symbolId="SYMB6" positions="5,7"/>
-</DefiningSymbols>
-</Signal>
-<Signal id="SIG9" name="Ack_RemoveDone">
+<Signal id="SIG8" name="Ack_RemoveDone">
 <DefiningSymbols>
 <SymbolReference symbolId="SYMB6" positions="22,7"/>
+</DefiningSymbols>
+</Signal>
+<Signal id="SIG9" name="Cmd_Remove">
+<DefiningSymbols>
+<SymbolReference symbolId="SYMB6" positions="21,7"/>
 </DefiningSymbols>
 </Signal>
 <Item id="ITEM1" type="system" name="Atelier" scope="current" formalParameterOrder="-" isFormalParam="FALSE" isSyntype="FALSE">
@@ -103,10 +103,10 @@
 </Connections>
 <SentSignals>
 <SignalReference id="SIG13"/>
-<SignalReference id="SIG10"/>
+<SignalReference id="SIG11"/>
+<SignalReference id="SIG4"/>
 <SignalReference id="SIG6"/>
-<SignalReference id="SIG5"/>
-<SignalReference id="SIG8"/>
+<SignalReference id="SIG10"/>
 </SentSignals>
 </SignalWindow>
 <Channel name="C_ENV_NET" fromSignalWindow="SIGWDW4" toSignalWindow="SIGWDW1"/>
@@ -144,20 +144,20 @@
 <ConnectorReference linkId="LINK44" isFrom="FALSE"/>
 <ReceivedSignals>
 <SignalReference id="SIG13"/>
-<SignalReference id="SIG10"/>
+<SignalReference id="SIG11"/>
+<SignalReference id="SIG4"/>
 <SignalReference id="SIG6"/>
-<SignalReference id="SIG5"/>
-<SignalReference id="SIG8"/>
+<SignalReference id="SIG10"/>
 </ReceivedSignals>
 </SignalWindow>
 <SignalWindow id="SIGWDW2" insideDiagram="FALSE">
 <ConnectorReference linkId="LINK48" isFrom="FALSE"/>
 <SentSignals>
 <SignalReference id="SIG13"/>
-<SignalReference id="SIG10"/>
+<SignalReference id="SIG11"/>
+<SignalReference id="SIG4"/>
 <SignalReference id="SIG6"/>
-<SignalReference id="SIG5"/>
-<SignalReference id="SIG8"/>
+<SignalReference id="SIG10"/>
 </SentSignals>
 </SignalWindow>
 </Item>
@@ -172,10 +172,10 @@
 <ConnectorReference linkId="LINK48" isFrom="TRUE"/>
 <ReceivedSignals>
 <SignalReference id="SIG13"/>
-<SignalReference id="SIG10"/>
+<SignalReference id="SIG11"/>
+<SignalReference id="SIG4"/>
 <SignalReference id="SIG6"/>
-<SignalReference id="SIG5"/>
-<SignalReference id="SIG8"/>
+<SignalReference id="SIG10"/>
 </ReceivedSignals>
 </SignalWindow>
 </Item>
