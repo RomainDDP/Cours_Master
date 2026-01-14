@@ -20,7 +20,7 @@ protected:
 		
 		for(auto i : *bb){
 
-			if(i->isStore() or i->isControl()) cost += 2;
+			if(i->isStore() or i->isControl() and i-> isConditional()) cost += 2;
 			else if (i->isLoad()) cost += 5;
 			else if (i->isMul()) cost += 4;
 			else cost += 1;
@@ -48,12 +48,58 @@ public:
 protected:
 
 	void processAll(WorkSpace *ws) override {
-		Vector<Block *> todo;
+        CFG *cfg = ws->getStartCFG();
+        int total_accesses = 0;
+        int hits = 0;
+        
+		for (auto b : *cfg) {
+            OUT(b) = BOT;
+        }
+
+        Vector<Block *> todo;
+        todo.push(cfg->entry());
+
+        while (!todo.isEmpty()) {
+            Block *bb = todo.pop();
+            Address current = input(bb); 
+            
+            if (bb->isBasic()) {
+                BasicBlock *bbb = bb->toBasic();
+                for (auto i : *bbb)
+					current = update(current, i);
+            }
+
+            if (current != OUT(bb)) {
+                OUT(bb) = current;
+                for (auto e : bb->outEdges())
+					todo.push(e->sink());
+            }
+        }
+
+
+        for (auto b : *cfg) { 
+            if (!b->isBasic()) continue;
+            BasicBlock *bb = b->toBasic();
+            
+            Address state = input(bb);
+            int penalty = 0;
+
+            for (auto inst : *bb) {
+                total_accesses++;
+
+                if (state == inst->address().page())
+					hits++;
+            	else 
+					penalty += 20;
+
+                state = update(state, inst);
+            }
+            ipet::TIME(bb) += penalty;
+        }
 
 	}
 
-	void processCFG(WorkSpace *ws, CFG *g) override {
-	}
+	void processCFG(WorkSpace *ws, CFG *g) override {}
 
 private:
 
@@ -67,26 +113,40 @@ private:
 	Address update(Address s, Inst *i) {
 		auto curr = i->address();
 
-		return join(s, curr);
+		return curr.page();
 	}
 
 	Address input(Block *v) {
-	
-		for(auto e: v->inEdges()){
-			work_with_predecessor(e->sources())
-		}
-
-	}
+		Address res = BOT;
+		for (auto e : v->inEdges())
+			res = join(res, OUT(e->source()));
+		
+		return res;	}
 
 	Address flashBlock(Inst *i) {
-		return i->address().mask(mask);
+		auto curr = i->address();
+		return curr.mask(mask);
 	}
 
-	bool processBasicBlock(Block *bb) {
+	bool processBasicBlock(Block *BB) {
+		Address in = input(BB);
+		Address out = in;
 
-		
+		if(BB->isBasic()) {
+			BasicBlock *bb = BB->toBasic();
+			for(auto inst: *bb)
+				out = update(out, inst);
+		}
 
+		Address old = OUT(BB);
+		if(out != old) {
+			OUT(BB) = out;
+			return true;
+		}
+
+		return false;
 	}
+
 
 	static p::id<Address> OUT;
 	static const Address TOP, BOT;
