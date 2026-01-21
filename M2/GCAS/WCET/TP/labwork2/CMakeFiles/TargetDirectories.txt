@@ -1,5 +1,0 @@
-/nfs/home/camsi4/Cours/M2/GCAS/TPs/WCET/labwork2/CMakeFiles/labwork.dir
-/nfs/home/camsi4/Cours/M2/GCAS/TPs/WCET/labwork2/CMakeFiles/dist.dir
-/nfs/home/camsi4/Cours/M2/GCAS/TPs/WCET/labwork2/CMakeFiles/otawa-dist.dir
-/nfs/home/camsi4/Cours/M2/GCAS/TPs/WCET/labwork2/CMakeFiles/edit_cache.dir
-/nfs/home/camsi4/Cours/M2/GCAS/TPs/WCET/labwork2/CMakeFiles/rebuild_cache.dir
